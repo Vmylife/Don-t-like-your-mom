@@ -433,6 +433,8 @@
     if (pendingTransition) { clearTimeout(pendingTransition); pendingTransition = null; }
     const elapsed = Math.min(DURATION, performance.now() - startAt);
     const survived = !likedMom;
+    // End-of-round achievement accounting, independent of leaderboard uploads.
+    window.DLYMAchievements?.record({likes:score,avoided,hiddenAvoided,maxCombo,skipped,survived});
     if (survived) {
       window.DLYMFeedback?.play('win');
       window.DLYMFeedback?.vibrate([38,25,75]);
@@ -712,13 +714,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.7.4';
+  const activeBuild = 'v0.8.0';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 99 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 99 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.7.4', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.8.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();

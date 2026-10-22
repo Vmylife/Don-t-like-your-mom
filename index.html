@@ -49,7 +49,7 @@
   <link rel="manifest" href="./manifest.webmanifest?v=mom-icon-v1">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192-mom-v1.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon-mom-v1.png">
-  <link rel="stylesheet" href="./style.css?v=0.7.2">
+  <link rel="stylesheet" href="./style.css?v=0.8.0">
   <title>DON'T LIKE YOUR MOM — 45 秒滑卡生存挑戰</title>
 </head>
 <body>
@@ -96,6 +96,7 @@
           <button id="friendChallengeButton" class="friend-challenge-button" type="button">👥 挑戰朋友</button>
           <button id="openLeaderboardWelcome" class="leaderboard-link" type="button">🏆 排行榜 ↗</button>
           <button id="openSubmitPhotos" class="community-submit-button" type="button">📸 我要投稿</button>
+          <button id="openAchievementsWelcome" class="achievement-link" type="button">🏅 成就圖鑑</button>
         </div>
         <div id="challengeInviteInfo" class="challenge-invite-info hidden" aria-live="polite"></div><div class="welcome-bottom">看到媽媽一定要左滑！<strong>右滑媽媽就 GAME OVER</strong></div>
       </section>
@@ -166,6 +167,7 @@
           <div><small>TIME SURVIVED</small><strong id="finalTime">0.0s</strong></div>
           <div><small>HIDDEN MOMS</small><strong id="finalAvoided">0</strong></div>
         </div>
+        <button id="achievementRoundNotice" class="achievement-award hidden" type="button" aria-live="polite"></button>
         <div id="recordMessage" class="record-message hidden">★ NEW PERSONAL BEST ★</div>
         <section id="scoreSubmitArea" class="score-submit hidden" aria-label="送出全球排行戰績">
           <label for="leaderboardNickname">🏆 全球排行榜暱稱</label>
@@ -189,6 +191,18 @@
         <div id="duelResultStatus" class="duel-result-status hidden" aria-live="polite"></div>
         <button id="duelResultRefresh" class="duel-refresh hidden" type="button">↻ 同步對手結果</button>
       </section>
+      <section id="achievementsScreen" class="screen screen-achievements hidden" aria-label="認媽成就圖鑑">
+        <div class="ach-kicker">🏅 DON'T LIKE YOUR MOM</div>
+        <h2>認媽成就圖鑑</h2>
+        <p class="ach-intro">滑得快還不夠，認得出媽媽才是真本事！</p>
+        <div class="ach-progress-head"><strong id="achievementCount">0 / 49</strong><span>成就完成度</span></div>
+        <div class="ach-progress-track"><span id="achievementProgress"></span></div>
+        <p id="achievementNext" class="ach-next"></p>
+        <div id="achievementFilters" class="ach-filters" role="group" aria-label="成就類別"></div>
+        <div id="achievementList" class="ach-list" aria-label="成就獎章"></div>
+        <p class="ach-local-note">🔒 不需要 Email。進度只存在這個瀏覽器；換手機或清除網站資料可能遺失。舊版歷史累積次數無法補算，但保留原本的個人最高 LIKE。</p>
+        <button id="closeAchievements" class="secondary-button ach-back" type="button">← 返回遊戲</button>
+      </section>
       <section id="leaderboardScreen" class="screen screen-leaderboard hidden" aria-label="全球排行榜">
         <div class="board-kicker">🏆 DON'T LIKE YOUR MOM</div>
         <h2>全球排行榜</h2>
@@ -206,7 +220,7 @@
         <p id="boardFootnote" class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
         <button id="closeLeaderboard" class="secondary-button board-back" type="button">← 返回遊戲</button>
       </section>
-      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.7.4 · 99 張內建照片</span></footer>
+      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.8.0 · 99 張內建照片</span></footer>
     </main>
   </div>
   <script src="./leaderboard-config.js?v=0.5.0"></script>
@@ -218,6 +232,7 @@
   <script src="./community-feed.js?v=0.7.2"></script>
   <script src="./photo-preload.js?v=0.7.3"></script>
   <script src="./live-duel.js?v=0.6.1"></script>
-  <script src="./script.js?v=0.7.4"></script>
+  <script src="./achievements.js?v=0.8.0"></script>
+  <script src="./script.js?v=0.8.0"></script>
 </body>
 </html>

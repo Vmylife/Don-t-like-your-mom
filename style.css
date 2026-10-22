@@ -453,3 +453,35 @@
  .board-champion .board-extra{font-size:10px}
  .board-champion{gap:5px;padding:9px 6px;grid-template-columns:29px minmax(0,1fr) auto}
 }
+
+/* v0.8.0 — local-only achievement gallery. The content scrolls inside the fixed-height PWA. */
+.achievement-link{background:#ffcf7320;color:#ffe1aa;border:1px solid #ffcf7360;border-radius:12px;font-weight:850;cursor:pointer;min-height:40px;}
+.achievement-award{display:block;width:100%;padding:5px 8px;margin:3px 0;border:1px solid #f5c77983;border-radius:9px;color:#ffe1ad;background:#6a492b70;font-weight:850;font-size:11px;cursor:pointer;text-align:center;}
+.screen-achievements{display:flex;flex-direction:column;padding:20px 18px 17px;gap:9px;min-height:0;}
+.ach-kicker{color:#f8a7c6;font-size:10px;font-weight:900;letter-spacing:1.6px;text-align:center;}
+.screen-achievements h2{color:#fff;margin:0;text-align:center;font-size:27px;font-weight:950;}
+.ach-intro{margin:0;text-align:center;color:#cebed8;font-size:12px;}
+.ach-progress-head{display:flex;align-items:center;justify-content:space-between;color:#d8c7de;font-size:12px;}
+.ach-progress-head strong{color:#ffbfd9;font-size:19px;}
+.ach-progress-track{height:9px;background:#ffffff20;border-radius:12px;overflow:hidden;flex:none;}
+.ach-progress-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#fe6da0,#ffc66f);border-radius:12px;transition:width .25s;}
+.ach-next{color:#ffe6b5;background:#ffffff0b;border:1px solid #ffffff20;border-radius:10px;margin:0;padding:9px 10px;font-size:12px;font-weight:800;}
+.ach-filters{display:flex;gap:6px;overflow-x:auto;flex:none;padding:2px 0 6px;touch-action:pan-x;scrollbar-width:none;}
+.ach-filters::-webkit-scrollbar{display:none;}
+.ach-filters button{flex:none;color:#d5bed7;border:1px solid #ffffff2c;border-radius:24px;background:#ffffff0b;padding:8px 12px;font-size:12px;font-weight:850;}
+.ach-filters button[aria-pressed="true"]{background:#ff438a45;color:#ffd2e4;border-color:#ff6b9e;}
+.ach-list{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;flex:1 1 auto;display:flex;flex-direction:column;gap:8px;padding:2px 2px 12px;}
+.ach-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #ffffff19;border-radius:13px;background:#ffffff07;min-height:74px;flex:none;}
+.ach-item.achieved{background:#ff639618;border-color:#ff89b74a;}
+.ach-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:11px;background:#ffffff12;font-size:24px;flex:none;}
+.ach-item.achieved .ach-icon{background:#ff94bb28;}
+.ach-info{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;}
+.ach-info strong{font-size:14px;color:#fff;}
+.ach-info small{font-size:11px;color:#bfb0c9;}
+.ach-item.achieved .ach-info small{color:#ffcbdd;}
+.ach-meter{height:5px;background:#ffffff19;border-radius:6px;overflow:hidden;}
+.ach-meter span{display:block;height:100%;background:#ff89b2;}
+.ach-local-note{color:#a99aba;font-size:10px;line-height:1.35;margin:0;}
+.ach-back{margin:0;flex:none;}
+@media(max-width:840px){.screen-achievements{padding:10px 13px max(10px,env(safe-area-inset-bottom));gap:7px;overflow:hidden;}.screen-achievements h2{font-size:23px;}.ach-intro{font-size:11px;}.ach-item{min-height:67px;padding:8px;}.ach-back{min-height:39px;}}
+@media(max-width:840px) and (max-height:735px){.ach-local-note{font-size:9px;}.screen-achievements h2{font-size:20px;}.ach-filters button{padding:6px 9px;}.ach-next{padding:6px 8px;}}
