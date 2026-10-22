@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM v0.6.0: simultaneous two-player duel via Supabase RPC.
+/* DON'T LIKE YOUR MOM v0.6.1: simultaneous two-player duel via Supabase RPC.
    Polling is used instead of a WebSocket to keep GitHub Pages dependencies small.
    These results are friendly comparisons, NOT trusted global ranking entries. */
 (() => {
@@ -25,6 +25,28 @@
   let pendingOutcome = null;
   let scoreSent = false;
   let activeInvite = incoming && UUID.test(incoming) ? incoming : null;
+  let photoReady=false,photoBusy=false,photoPromise=null;
+  function warmRoomPhotos(roomSeed) {
+    photoReady=false;photoBusy=true;
+    ui.ready.disabled=true;
+    const preloader=window.DLYMPhotoPreload;
+    if (!preloader) { message('照片預載模組未載入，請確認 photo-preload.js 已上傳。'); return; }
+    message('⏳ 準備好友房間照片…');
+    const thisSeed=roomSeed;
+    photoPromise=preloader.duel(roomSeed,({done,total,failed})=>{
+      if (!live || seed!==thisSeed || ready || started) return;
+      message(`⏳ 預載前 60 張對戰卡片：${done}/${total} 張`+(failed?`（${failed} 張失敗）`:''));
+    }).then(result=>{
+      if (!live || seed!==thisSeed) return;
+      photoReady = result.failed===0;photoBusy=false;
+      if (!ready && !started) {ui.ready.disabled=false;ui.ready.textContent=photoReady?'✓ 我準備好了':'↻ 重新預載照片';}
+      if (result.failed) message(`有 ${result.failed} 張照片預載失敗，請點「重新預載照片」重試。`);
+      else if (!ready && !started) message('✓ 前 60 張卡片已預載完成！可以按「我準備好了」。');
+    }).catch(err=>{
+      photoReady=false;photoBusy=false;ui.ready.disabled=false;ui.ready.textContent='↻ 重新預載照片';
+      message('預載失敗：'+err.message+'。點「重新預載照片」重試。');
+    });
+  }
   const NAME_KEY = 'dlym_duel_player_name_v060';
   const recordKey = room => `dlym_duel_token_${room}`;
   try { ui.name.value = localStorage.getItem(NAME_KEY) || localStorage.getItem('dlym_player_name_v050') || ''; } catch {}
@@ -91,7 +113,8 @@
       store(id,token); updateUrl(id);
       showLoginUI(); ui.create.classList.add('hidden');
       ui.ready.classList.remove('hidden'); ui.share.classList.toggle('hidden',isJoining);
-      message(isJoining?'已加入房間！按「我準備好了」，等朋友一起開局。':'房間已建立！先把連結傳給朋友，再一起按準備。');
+      message(isJoining?'已加入！正在預載前 60 張卡片。':'房間已建立！可以先分享連結，正在預載前 60 張卡片。');
+      warmRoomPhotos(seed);
       await refresh(); startPolling();
     } catch(e) { message('無法建立／加入：'+e.message); }
     finally { ui.create.disabled = false; }
@@ -118,7 +141,7 @@
       if (live && !started) scheduleStart(s);
     } else {
       ready = role==='host'?s.host_ready:s.guest_ready;
-      ui.ready.disabled = ready;
+      ui.ready.disabled = ready || !photoReady;
       ui.ready.textContent = ready ? '✓ 你已準備，等待朋友' : '✓ 我準備好了';
       if (ready && s.guest_name) message('等另一位玩家準備好，就會一起倒數 3、2、1！');
     }
@@ -168,6 +191,10 @@
   }
   async function markReady() {
     if (!id || !token || ready || !live) return;
+    if (!photoReady) {
+      if (photoBusy && photoPromise) await photoPromise;
+      if (!photoReady) {warmRoomPhotos(seed);return;}
+    }
     ui.ready.disabled = true;
     try { await rpc('dlym_duel_ready',{p_room:id,p_token:token}); await refresh(); }
     catch(e) {ui.ready.disabled=false;message('準備失敗：'+e.message);}
@@ -183,7 +210,7 @@
   function abandon() {
     clearInterval(polling); polling=null;
     clearInterval(startingTimer); startingTimer=null;
-    live=false; started=false; ready=false;id=null;token=null;seed=null;role=null;scoreSent=false;pendingOutcome=null;
+    live=false; started=false; ready=false;photoReady=false;photoBusy=false;photoPromise=null;id=null;token=null;seed=null;role=null;scoreSent=false;pendingOutcome=null;
     activeInvite=null; lastState=null;
     updateUrl(null);
     ui.result?.classList.add('hidden'); ui.resultRefresh?.classList.add('hidden');
@@ -211,7 +238,7 @@
         seed=state.body.seed; lastRequestMs=state.start;
         ui.create.classList.add('hidden');ui.ready.classList.remove('hidden');
         ui.share.classList.toggle('hidden',state.body.role!=='host');
-        paintRoom(state.body);startPolling();
+        paintRoom(state.body);warmRoomPhotos(seed);startPolling();
       } catch(e) { id=null;token=null;live=false;message('舊房間已失效，請重新取得邀請連結。'); }
     }
   }

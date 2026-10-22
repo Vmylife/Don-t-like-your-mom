@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM — v0.5.9: submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
+/* DON'T LIKE YOUR MOM — v0.6.1: submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
 (() => {
   'use strict';
 
@@ -98,6 +98,9 @@
   // Prepare/decode a small deck before the user swipes. Use the SAME decoded
   // <img> node for the visible card, instead of changing src on the old image.
   const DECK_AHEAD = 5;
+  let cardReady = false;
+  let preloadingFree = false;
+  let currentEntry = null;
   let upcoming = [];
   let preparedLevel = -1;
   let renderSerial = 0;
@@ -120,7 +123,26 @@
   let previewImg = null;
   ui.cardArea.insertBefore(preview, ui.card);
 
-  function prepareEntry(person) {
+  // A card is NEVER silently playable while the image is missing.
+  const photoLoader = document.createElement('button');
+  photoLoader.type = 'button';
+  photoLoader.className = 'photo-loading-indicator hidden';
+  photoLoader.textContent = '⏳ 照片載入中…';
+  ui.profileImage.closest('.profile-photo').append(photoLoader);
+  function showPhotoLoading(message,failed=false) {
+    photoLoader.textContent=message;
+    photoLoader.disabled=!failed;
+    photoLoader.classList.remove('hidden');
+  }
+  photoLoader.addEventListener('click',() => {
+    if (!active || cardReady || !currentEntry) return;
+    // Use a fresh Image request, preserving the same card and its correct answer.
+    const entry = prepareEntry(currentEntry.person,true);
+    currentEntry=entry;
+    setCard(entry);
+  });
+
+  function prepareEntry(person, forceRetry=false) {
     const img = new Image();
     img.decoding = 'async';
     img.loading = 'eager';
@@ -130,7 +152,7 @@
     img.style.objectFit = 'contain';
     img.style.objectPosition = 'center center';
     const entry = { person, img, ready: false, failed: false, promise: null };
-    img.src = person.image;
+    img.src = person.image + (forceRetry ? (person.image.includes('?')?'&':'?')+'retry='+Date.now() : '');
     // decode() resolves only once the complete image can be painted.
     // Safari and older browsers may reject or not support it; fall back to load.
     entry.promise = (typeof img.decode === 'function'
@@ -264,23 +286,32 @@
   function setCard(entry) {
     const person = entry.person;
     current = person;
+    currentEntry = entry;
+    cardReady = false;
     const serial = ++renderSerial;
-    // Hide the previous image AND previous backdrop to prevent stale-card flashes.
+    // Never offer a blank but interactive card to Android players.
     ui.profileImage.style.visibility = 'hidden';
+    showPhotoLoading('⏳ 照片載入中…');
     const photoSurface = ui.profileImage.closest('.profile-photo');
     photoSurface?.style.setProperty('--portrait-background', 'none');
     const reveal = () => {
-      if (serial !== renderSerial || !active || current !== person || !entry.ready) return;
+      if (serial !== renderSerial || !active || current !== person || currentEntry!==entry || !entry.ready) return;
       const oldImage = ui.profileImage;
       entry.img.id = 'profileImage';
       entry.img.style.visibility = 'visible';
       oldImage.removeAttribute('id');
-      oldImage.replaceWith(entry.img); // Atomically move already-decoded img into place.
+      oldImage.replaceWith(entry.img);
       ui.profileImage = entry.img;
       photoSurface?.style.setProperty('--portrait-background', `url("${person.image}")`);
+      cardReady = true;
+      photoLoader.classList.add('hidden');
     };
     if (entry.ready) reveal();
-    else entry.promise.then(reveal);
+    else entry.promise.then(ok => {
+      if (serial!==renderSerial || currentEntry!==entry || !active) return;
+      if (ok) reveal();
+      else showPhotoLoading('⚠️ 圖片載入失敗，點擊重試',true);
+    });
 
     ui.profileName.replaceChildren(document.createTextNode(person.name + ' '));
     const age = document.createElement('span');
@@ -312,7 +343,7 @@
     window.DLYMFeedback?.unlock();
     window.DLYMFeedback?.resetCombo();
     window.DLYMLeaderboard?.startRound();
-    upcoming = []; preparedLevel = -1;
+    upcoming = []; preparedLevel = -1; cardReady=false;
     ++renderSerial; ++previewSerial; // Cancel previous round's in-flight image work.
     // Once promoted, the prepared <img> belongs to the front card.
     // Never delete it while clearing the rear preview.
@@ -330,6 +361,7 @@
     showScreen('game');
     setCard(takeReadyCard());
     paintPreview();
+    window.DLYMPhotoPreload?.remainder();
     frame = requestAnimationFrame(tick);
   }
   function tick(now) {
@@ -342,7 +374,7 @@
     frame = requestAnimationFrame(tick);
   }
   function swipe(which) {
-    if (!active || locked || ended) return;
+    if (!active || locked || ended || !cardReady) return;
     if (performance.now() >= endAt) { endGame(false); return; }
     locked = true;
     const person = current;
@@ -555,10 +587,31 @@
       inviteInfo.classList.add('hidden');
     }
   }
-  ui.start.addEventListener('click', () => {
+  ui.start.addEventListener('click', async () => {
+    if (preloadingFree) return;
     if (window.DLYMDuel?.incoming) {window.DLYMDuel.open(true);return;}
-    if (incomingInvite && !incomingInvite.invalid) startGame('challenge',incomingInvite.seed,incomingInvite);
-    else startGame('free');
+    preloadingFree=true;
+    ui.start.disabled=true;
+    const original = ui.start.textContent;
+    try {
+      const preloader=window.DLYMPhotoPreload;
+      if (preloader) {
+        const callback=({done,total,failed}) => {
+          ui.start.textContent=`⏳ 正在預載照片 ${done}/${total}`;
+          if (failed) ui.start.textContent+=`（${failed} 張失敗）`;
+        };
+        const result = incomingInvite && !incomingInvite.invalid
+          ? await preloader.duel(incomingInvite.seed,callback)
+          : await preloader.free(callback);
+        if (result.failed) {
+          alert(`${result.failed} 張照片暫時無法預載。請確認網路再重試，避免遊戲中途出現空白。`);
+          return;
+        }
+      }
+      if (incomingInvite && !incomingInvite.invalid) startGame('challenge',incomingInvite.seed,incomingInvite);
+      else startGame('free');
+    } catch(e) { console.error(e);alert('預載照片失敗，請檢查網路後重試。'); }
+    finally {ui.start.disabled=false;ui.start.textContent=original;preloadingFree=false;}
   });
   // v0.6.0: Create/share a room BEFORE playing; both devices start together.
   friendBtn.addEventListener('click', () => window.DLYMDuel?.open(Boolean(window.DLYMDuel?.incoming)));
@@ -629,7 +682,7 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.6.0';
+  const activeBuild = 'v0.6.1';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 70 NORMAL + 29 MOM';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 99 張照片';
