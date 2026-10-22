@@ -9,7 +9,7 @@
   let gameId = 0;
   let submittedGameId = -1;
   let backTo = 'welcome';
-  let scope = 'all';
+  let scope = 'today';
   let lastPayload = null;
   const $ = id => document.getElementById(id);
   const ui = {
@@ -158,7 +158,7 @@
       statusText('目前還沒有人上榜，第一名就等你了！');
       return;
     }
-    statusText(`${scope === 'today' ? '今日榜（台灣時間）' : '歷史總榜'} · 前 ${rows.length} 名`);
+    statusText(`${scope === 'today' ? '每日榜（台灣時間）' : '歷史排行'} · 前 ${rows.length} 名`);
     for (const entry of rows) {
       const rank = Number(entry.rank_no);
       const li = document.createElement('li');

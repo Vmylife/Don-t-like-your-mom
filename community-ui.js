@@ -102,6 +102,7 @@
      if(compressed.size>=existing.size){status(out,'原照片已足夠小，保留原始畫質。');return;}
      status(out,`⏳ 壓縮後 ${Math.round(compressed.size/1024)} KB，正在更新公開圖…`);
      await API.overwritePublicPhoto(path,compressed);
+     await listPhotos();
      status(out,`✅ 已完成：${Math.round(existing.size/1024)} → ${Math.round(compressed.size/1024)} KB。社群快取更新可能需要一點時間。`);
    }catch(err){status(out,'❌ 舊照片優化失敗（原檔不會由本程式主動刪除）：'+err.message);}
    finally{busy=false;}
@@ -118,23 +119,57 @@
    }catch(err){status(out,'下架過程有部分步驟未完成：'+err.message+'。請檢查 Storage 的 dlym-approved 是否還有該檔案。');}
    finally{busy=false;}
  }
+ function formatPhotoBytes(size){
+   if(!Number.isFinite(size)||size<=0)return '無法取得';
+   return size>=1048576?(size/1048576).toFixed(2)+' MB':Math.ceil(size/1024)+' KB';
+ }
+ async function approvedPhotoSize(path){
+   // HEAD avoids a second full download; the <img> tag already handles the photo itself.
+   const res=await fetch(API.publicPhotoUrl(path),{method:'HEAD',cache:'no-store'});
+   if(!res.ok)throw new Error('HEAD '+res.status);
+   const bytes=Number(res.headers.get('content-length'));
+   return Number.isFinite(bytes)&&bytes>0?bytes:null;
+ }
+ function releasePreviewUrls(container){
+   container.querySelectorAll('img[data-review-preview]').forEach(img=>{
+     if(img.src.startsWith('blob:'))URL.revokeObjectURL(img.src);
+   });
+ }
  function renderList(container,rows){
+   releasePreviewUrls(container);
    container.replaceChildren();
    if(!rows.length){const empty=document.createElement('div');empty.className='empty-message';empty.textContent='目前沒有這類投稿。';container.append(empty);return;}
    for(const row of rows){
      const item=document.createElement('article');item.className='review-item';
      const img=document.createElement('img');img.className='review-image';img.alt='投稿照片，僅供審核';
-     if(row.status==='approved')img.src=API.publicPhotoUrl(row.approved_path);
-     else API.previewPrivate(row.private_path).then(blob=>{if(item.isConnected)img.src=URL.createObjectURL(blob);}).catch(()=>{img.alt='圖片讀取失敗';});
      const details=document.createElement('div');details.className='review-details';
      const heading=document.createElement('strong');heading.textContent=`${row.nickname} · ${row.age} 歲`;
      const bio=document.createElement('p');bio.textContent=`${row.city}｜${row.bio}`;
      const meta=document.createElement('small');meta.textContent=new Date(row.created_at).toLocaleString('zh-TW');
+     const sizeLabel=document.createElement('span');sizeLabel.className='review-file-size';
+     sizeLabel.textContent='📦 檔案大小：讀取中…';
+     if(row.status==='approved'){
+       img.src=API.publicPhotoUrl(row.approved_path);
+       approvedPhotoSize(row.approved_path).then(bytes=>{
+         if(item.isConnected)sizeLabel.textContent='📦 檔案大小：'+formatPhotoBytes(bytes);
+       }).catch(()=>{if(item.isConnected)sizeLabel.textContent='📦 檔案大小：無法取得';});
+     }else{
+       img.dataset.reviewPreview='true';
+       API.previewPrivate(row.private_path).then(blob=>{
+         if(!item.isConnected)return;
+         sizeLabel.textContent='📦 檔案大小：'+formatPhotoBytes(blob.size);
+         img.src=URL.createObjectURL(blob);
+       }).catch(()=>{
+         if(!item.isConnected)return;
+         sizeLabel.textContent='📦 檔案大小：無法取得';
+         img.alt='圖片讀取失敗';
+       });
+     }
      const actions=document.createElement('div');actions.className='review-buttons';
      if(row.status==='pending'){
        actions.append(button('✓ 通過','approve',()=>moderate(row,true)),button('✕ 拒絕','reject',()=>moderate(row,false)));
      }else {actions.append(button('🗜️ 壓縮舊照片','approve',()=>optimizePublished(row)),button('撤下照片','reject',()=>unpublish(row)));}
-     details.append(heading,bio,meta,actions);item.append(img,details);container.append(item);
+     details.append(heading,bio,sizeLabel,meta,actions);item.append(img,details);container.append(item);
    }
  }
  loginForm.addEventListener('submit',async ev=>{
