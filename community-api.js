@@ -86,9 +86,29 @@
     const resp=await fetch(base+'/storage/v1/object/dlym-approved/'+path,{method:'DELETE',headers:{apikey:key,Authorization:'Bearer '+token}});
     if(!resp.ok){const json=await resp.json().catch(()=>null);throw new Error(safeError(json,resp.status));}
   }
+  async function downloadPublicPhoto(path){
+    if(!/^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(path||''))throw new Error('照片路徑不正確');
+    const res=await fetch(publicPhotoUrl(path)+'?inspect='+Date.now(),{cache:'no-store'});
+    if(!res.ok)throw new Error('讀取公開照片失敗：HTTP '+res.status);
+    const blob=await res.blob();
+    if(!blob.size || !blob.type.startsWith('image/'))throw new Error('照片格式無效');
+    return blob;
+  }
+  async function overwritePublicPhoto(path,bytes){
+    if(!/^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(path||''))throw new Error('照片路徑不正確');
+    const mime=path.endsWith('.jpg')?'image/jpeg':'image/webp';
+    if(bytes.type!==mime||bytes.size>500*1024)throw new Error('只允許相同格式且不超過 500 KB 的圖片');
+    const token=(await authFor('admin')).access_token;
+    const res=await fetch(base+'/storage/v1/object/dlym-approved/'+path,{
+      method:'POST',headers:{apikey:key,Authorization:'Bearer '+token,'Content-Type':mime,'x-upsert':'true','cache-control':'3600'},
+      body:bytes,cache:'no-store'
+    });
+    if(!res.ok){const data=await res.json().catch(()=>null);throw new Error(safeError(data,res.status));}
+    return res.json().catch(()=>({}));
+  }
   function publicPhotoUrl(path){
     if(!/^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(path||''))throw new Error('不合法的公開照片路徑');
     return base+'/storage/v1/object/public/dlym-approved/'+path;
   }
-  window.DLYMCommunityAPI={base,configured,authFor,adminLogin,rpc,table,uploadPrivate,previewPrivate,publishPrivate,deletePrivate,deletePublic,publicPhotoUrl,logoutAdmin(){save('admin',null)}};
+  window.DLYMCommunityAPI={base,configured,authFor,adminLogin,rpc,table,uploadPrivate,previewPrivate,publishPrivate,deletePrivate,deletePublic,downloadPublicPhoto,overwritePublicPhoto,publicPhotoUrl,logoutAdmin(){save('admin',null)}};
 })();

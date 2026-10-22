@@ -20,13 +20,14 @@
     <div id="adminWorkspace" class="hidden">
       <div class="admin-actions"><button id="adminRefresh" type="button" class="secondary-button">↻ 重新整理投稿</button><button id="adminLogout" type="button" class="secondary-button">登出</button></div>
       <h2>🕓 待審核</h2><div id="adminPendingList" class="review-list"></div>
-      <h2>✅ 已公開（可下架）</h2><div id="adminApprovedList" class="review-list"></div>
+      <h2>✅ 已公開（可壓縮舊照片或下架）</h2><div id="adminApprovedList" class="review-list"></div>
     </div>
     <p id="adminStatus" class="status-box" role="status" aria-live="polite"></p>
     <p class="tiny-note">管理員帳號密碼不會寫進 GitHub。禁止把 Supabase secret / service_role key 放進任何網頁或設定檔。</p>
   </main>
   <script src="./leaderboard-config.js?v=0.5.0"></script>
-  <script src="./community-api.js?v=0.7.2"></script>
-  <script src="./community-ui.js?v=0.7.2"></script>
+  <script src="./community-api.js?v=0.7.3"></script>
+  <script src="./photo-compress.js?v=0.7.3"></script>
+  <script src="./community-ui.js?v=0.7.3"></script>
 </body>
 </html>

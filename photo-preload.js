@@ -1,10 +1,10 @@
-/* DON'T LIKE YOUR MOM v0.6.1 — bounded download preloader for Android/iOS.
+/* DON'T LIKE YOUR MOM v0.7.3 — progressive download preloader for Android/iOS.
    Cache compressed WebP bytes; decode only the few cards near the front. */
 (() => {
   'use strict';
-  const CACHE = 'dlym-photo-v061';
-  const COUNT = 60;
-  const CONCURRENCY = 4;
+  const CACHE = 'dlym-photo-v061'; // retain existing cached bytes
+  const COUNT = 18;
+  const CONCURRENCY = 3;
   const ART = window.ART_DATA;
   const ENGINE = window.DLYMDeckEngine;
   const pending = new Map();
@@ -57,18 +57,19 @@
     return list;
   }
   function freeFiles() {
-    // 45 normal / 10 hidden / 5 direct; distinct assets; background download
-    // continues opportunistically after the round begins.
+    // After any guaranteed first cards, warm likely candidates: 13 normal, 3 background
+    // MOM and 2 direct MOM images. The free-mode deck is score-dependent,
+    // so these are candidates, not a false guarantee of its exact first 18.
     const freeArt=window.DLYMCommunity?.artForFree(ART)||ART;
-    const result = [...shuffle(freeArt.normal.map(v=>v.file)).slice(0,45),
-      ...shuffle(ART.background.map(v=>v.file)).slice(0,10),
-      ...shuffle(ART.direct.map(v=>v.file)).slice(0,5)];
+    const result = [...shuffle(freeArt.normal.map(v=>v.file)).slice(0,13),
+      ...shuffle(ART.background.map(v=>v.file)).slice(0,3),
+      ...shuffle(ART.direct.map(v=>v.file)).slice(0,2)];
     return shuffle([...new Set(result)]).slice(0,COUNT);
   }
   function duelFiles(seed) {
     const deck = ENGINE.create(ART,{mode:'challenge',seed});
     const files=[];
-    // Generate the exact first 60 *card positions* with the same deterministic
+    // Generate the exact first 18 *card positions* with the same deterministic
     // engine as the actual match (do not consume the actual match's deck).
     for(let i=1;i<=COUNT;i++) files.push(deck.next(i).art.file);
     return [...new Set(files)];
@@ -89,15 +90,15 @@
     await Promise.all(Array.from({length:Math.min(CONCURRENCY,unique.length)},worker));
     return {done:complete,total:unique.length,failed};
   }
-  // No guesswork in duels: this preloads the actual first 60 cards.
-  const free = cb => prepare(freeFiles(),cb);
+  // No guesswork in duels: this preloads the actual first 18 cards.
+  const free = (cb,guaranteed=[]) => prepare([...new Set([...guaranteed,...freeFiles()])].slice(0,COUNT),cb);
   const duel = (seed,cb) => prepare(duelFiles(seed),cb);
   function remainder() {
     // Low-priority background fetch of the rest: at most one request at a time.
     const base=window.DLYMCommunity?.artForFree(ART)||ART;
     const all=[...base.normal,...base.background,...base.direct].map(v=>v.file);
     const queue=shuffle([...new Set(all)]);
-    const idle=window.requestIdleCallback || (callback => setTimeout(callback,1100));
+    const idle=window.requestIdleCallback || (callback => setTimeout(callback,900));
     if (remainderStarted) return;
     remainderStarted=true;
     let index=0;

@@ -16,7 +16,7 @@
       <label class="field-label" for="communityPhoto">生活照片（限本人或取得同意的成年人）</label>
       <input id="communityPhoto" type="file" accept="image/*" required>
       <div class="preview-box"><img id="communityPreview" alt="本次投稿的照片預覽" hidden><span id="previewPlaceholder">選擇照片後可在這裡預覽</span></div>
-      <p class="hint">JPG / PNG / iPhone 照片皆可嘗試；送出前轉為 WebP 或 JPEG，去除 EXIF 定位等中繼資料。最多 8 MB 原始照片。</p>
+      <p class="hint">JPG / PNG / iPhone 照片都可嘗試；自動縮到最長邊 1200 px，目標約 300 KB、上限 500 KB；保留 JPEG 備用並移除 EXIF。原圖最多 8 MB。</p>
       <div class="field-grid">
         <div><label class="field-label" for="communityName">遊戲暱稱</label><input id="communityName" type="text" minlength="1" maxlength="24" required placeholder="例：路邊喝咖啡的阿傑"></div>
         <div><label class="field-label" for="communityAge">年齡（18 歲以上）</label><input id="communityAge" type="number" min="18" max="99" required value="25"></div>
@@ -31,7 +31,8 @@
     <p class="tiny-note">照片尚未核准前只存放在私人儲存區，不會進入滑卡庫。首次投稿可能需要多等幾秒建立匿名身份。</p>
   </main>
   <script src="./leaderboard-config.js?v=0.5.0"></script>
-  <script src="./community-api.js?v=0.7.2"></script>
-  <script src="./community-ui.js?v=0.7.2"></script>
+  <script src="./community-api.js?v=0.7.3"></script>
+  <script src="./photo-compress.js?v=0.7.3"></script>
+  <script src="./community-ui.js?v=0.7.3"></script>
 </body>
 </html>

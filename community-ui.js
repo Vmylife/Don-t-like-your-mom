@@ -11,58 +11,8 @@
    const b=new Uint8Array(16);crypto.getRandomValues(b);b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;
    return [...b].map(x=>x.toString(16).padStart(2,'0')).join('').replace(/^(........)(....)(....)(....)(............)$/, '$1-$2-$3-$4-$5');
  }
- // Encode using a standards-based fallback. iOS Safari may silently emit PNG for
- // canvas.toBlob('image/webp'): checking only whether a Blob exists is NOT enough.
- async function encodeCanvas(canvas, mime, quality){
-   let blob=null;
-   if(typeof canvas.toBlob==='function'){
-     try{blob=await new Promise(resolve=>canvas.toBlob(resolve,mime,quality));}catch(_){/* try data URL */}
-     if(blob && blob.size && blob.type===mime)return blob;
-   }
-   // Older WebKit can fail to implement canvas.toBlob for supported formats.
-   // toDataURL removes EXIF like toBlob, but is only a fallback to limit memory.
-   try{
-     const uri=canvas.toDataURL(mime,quality);
-     if(!uri.startsWith('data:'+mime+';base64,'))return null;
-     const binary=atob(uri.slice(uri.indexOf(',')+1));
-     const data=new Uint8Array(binary.length);
-     for(let i=0;i<binary.length;i++)data[i]=binary.charCodeAt(i);
-     return new Blob([data],{type:mime});
-   }catch(_){return null;}
- }
- async function compress(file){
-   if(!file||!file.type.startsWith('image/'))throw new Error('請選擇圖片檔案。');
-   if(file.size>8*1024*1024)throw new Error('原始照片上限是 8 MB，請選小一點的檔案。');
-   const url=URL.createObjectURL(file);
-   try{
-     const image=new Image();
-     const ready=new Promise((res,rej)=>{image.onload=res;image.onerror=()=>rej(new Error('圖片無法解碼。若是 HEIC，請先在相簿轉成 JPG 再投稿。'));});
-     image.src=url;await ready;
-     const originalMax=Math.max(image.naturalWidth,image.naturalHeight);
-     if(!originalMax)throw new Error('無法讀取照片尺寸，請重新選擇圖片。');
-     const canvas=document.createElement('canvas');
-     const ctx=canvas.getContext('2d');if(!ctx)throw new Error('這個瀏覽器無法處理圖片，請更新 Safari 或 Chrome。');
-     const maxBytes=2*1024*1024;
-     for(const maxSide of [1400,1200,1000]){
-       const ratio=Math.min(1,maxSide/originalMax);
-       canvas.width=Math.max(1,Math.round(image.naturalWidth*ratio));
-       canvas.height=Math.max(1,Math.round(image.naturalHeight*ratio));
-       ctx.clearRect(0,0,canvas.width,canvas.height);
-       ctx.drawImage(image,0,0,canvas.width,canvas.height);
-       // A real WebP blob is preferred. WebKit returning PNG is not a WebP result.
-       if(maxSide===1400){
-         const webp=await encodeCanvas(canvas,'image/webp',.8);
-         if(webp && webp.size<=maxBytes)return webp;
-       }
-       // Safari-compatible JPEG fallback, with size reduction when needed.
-       for(const quality of [.82,.7,.55]){
-         const jpeg=await encodeCanvas(canvas,'image/jpeg',quality);
-         if(jpeg && jpeg.size<=maxBytes)return jpeg;
-       }
-     }
-     throw new Error('無法產生 2 MB 以下的 JPG / WebP，請試其他照片或更新瀏覽器。');
-   }finally{URL.revokeObjectURL(url);}
- }
+ const compress=window.DLYMPhotoCompress?.compress;
+ if(!compress)throw new Error('照片壓縮程式沒有載入，請重新整理。');
  if(sendForm){
    const file=$('communityPhoto'),picture=$('communityPreview'),holder=$('previewPlaceholder'),out=$('communityStatus'),button=$('communitySend');
    let previewUrl=null;
@@ -79,9 +29,9 @@
      if(utfLength(name)<1||utfLength(name)>24||utfLength(city)<1||utfLength(city)>24||utfLength(bio)<1||utfLength(bio)>100||!Number.isInteger(age)||age<18||age>99){status(out,'請確認暱稱、城市、介紹與年齡。');return;}
      button.disabled=true;
      try{
-       status(out,'⏳ 正在轉換照片（WebP 或 JPEG）、移除定位中繼資料…');
+       status(out,'⏳ 正在壓縮照片（目標約 300 KB、上限 500 KB）並移除定位資料…');
        const bytes=await compress(file.files[0]);
-       status(out,'⏳ 正在建立安全的投稿身份…');
+       status(out,`✅ 壓縮完成：${Math.round(bytes.size/1024)} KB，正在建立投稿身份…`);
        const session=await API.authFor('guest');
        const owner=session.user?.id || JSON.parse(atob(session.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).sub;
        if(!/^[a-f0-9-]{36}$/i.test(owner))throw new Error('投稿身份無效，請重新開啟頁面。');
@@ -133,6 +83,29 @@
    }catch(err){status(out,'審核失敗：'+err.message+'。請勿重複狂按；若圖片已複製，重新整理後再處理。');}
    finally{busy=false;}
  }
+ async function optimizePublished(row){
+   if(busy)return;
+   const path=row.approved_path;
+   if(!/^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(path||'')){
+     status(out,'照片路徑不正確，無法安全壓縮。');return;
+   }
+   if(!confirm(`將「${row.nickname}」已公開的照片壓縮到 500 KB 以下並覆蓋原圖嗎？\n此動作只限管理員。`))return;
+   busy=true;
+   try {
+     status(out,'⏳ 正在讀取已公開照片…');
+     const existing=await API.downloadPublicPhoto(path);
+     if(existing.size<=500*1024){status(out,`✅ 這張已是 ${Math.ceil(existing.size/1024)} KB，無需壓縮。`);return;}
+     const mime=path.endsWith('.jpg')?'image/jpeg':'image/webp';
+     status(out,`⏳ 原圖 ${Math.round(existing.size/1024)} KB，正在安全壓縮…`);
+     const compressed=await compress(existing,{preserveMime:mime});
+     if(compressed.type!==mime)throw new Error('轉檔格式與既有副檔名不同，已取消覆蓋。');
+     if(compressed.size>=existing.size){status(out,'原照片已足夠小，保留原始畫質。');return;}
+     status(out,`⏳ 壓縮後 ${Math.round(compressed.size/1024)} KB，正在更新公開圖…`);
+     await API.overwritePublicPhoto(path,compressed);
+     status(out,`✅ 已完成：${Math.round(existing.size/1024)} → ${Math.round(compressed.size/1024)} KB。社群快取更新可能需要一點時間。`);
+   }catch(err){status(out,'❌ 舊照片優化失敗（原檔不會由本程式主動刪除）：'+err.message);}
+   finally{busy=false;}
+ }
  async function unpublish(row){
    if(busy||!confirm('確定把這張照片從遊戲撤下，並刪除公開檔案？'))return;
    busy=true;
@@ -160,7 +133,7 @@
      const actions=document.createElement('div');actions.className='review-buttons';
      if(row.status==='pending'){
        actions.append(button('✓ 通過','approve',()=>moderate(row,true)),button('✕ 拒絕','reject',()=>moderate(row,false)));
-     }else actions.append(button('撤下照片','reject',()=>unpublish(row)));
+     }else {actions.append(button('🗜️ 壓縮舊照片','approve',()=>optimizePublished(row)),button('撤下照片','reject',()=>unpublish(row)));}
      details.append(heading,bio,meta,actions);item.append(img,details);container.append(item);
    }
  }

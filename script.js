@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM — v0.7.1: archives daily champions; visible MOM roasts on mobile and live duels; submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
+/* DON'T LIKE YOUR MOM — v0.7.3: progressive photo preload and smaller submissions; archives daily champions; visible MOM roasts on mobile and live duels; submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
 (() => {
   'use strict';
 
@@ -68,6 +68,7 @@
   let shown = 0;
   const ENGINE = window.DLYMDeckEngine;
   let roundDeck = null;
+  let warmFreeStart = null; // same five actual cards and deck used during early preload
   let currentMode = 'free';
   let liveDuelActive = false;
   let currentChallengeSeed = null;
@@ -263,7 +264,7 @@
     return idx;
   }
   function nextProfile(position) {
-    const {art,type} = roundDeck.next(position, level());
+    const {art,type} = (currentMode === 'free' && warmFreeStart?.queue[position-1]) || roundDeck.next(position, level());
     if (type === 'normal') return makeProfile(art);
     if (type === 'background') return {
       ...makeProfile(art), isMom: true, trapType: 'background', spot: art.spot, reason: art.reason
@@ -338,7 +339,9 @@
     currentMode = mode;
     currentChallengeSeed = mode === 'challenge' ? (seed || ENGINE.newSeed()) : null;
     currentFriendTarget = mode === 'challenge' ? friendTarget : null;
-    roundDeck = ENGINE.create(mode === 'free' ? (window.DLYMCommunity?.artForFree(ART) || ART) : ART, {mode,seed:currentChallengeSeed});
+    roundDeck = mode === 'free' && opts.prewarmed?.deck ? opts.prewarmed.deck
+      : ENGINE.create(mode === 'free' ? (window.DLYMCommunity?.artForFree(ART) || ART) : ART, {mode,seed:currentChallengeSeed});
+    warmFreeStart = mode === 'free' ? (opts.prewarmed || null) : null;
     if (pendingTransition) { clearTimeout(pendingTransition); pendingTransition = null; }
     if (frame) cancelAnimationFrame(frame);
     score = 0; avoided = 0; hiddenAvoided = 0; skipped = 0; combo = 0; maxCombo = 0; shown = 0;
@@ -609,23 +612,33 @@
     try {
       // Only FREE mode loads new community photos. Room duels stay on the fixed
       // original 99 for identical card orders on both phones.
-      if (!incomingInvite || incomingInvite.invalid) await window.DLYMCommunity?.load();
+      const freePlay=!incomingInvite || incomingInvite.invalid;
+      if(freePlay) await window.DLYMCommunity?.load();
+      // Reserve the first five cards from the REAL free-mode deck. These must
+      // be in the initial download batch, without changing gameplay difficulty.
+      let prewarmed=null;
+      if(freePlay && ENGINE){
+        const deck=ENGINE.create(window.DLYMCommunity?.artForFree(ART)||ART,{mode:'free'});
+        const queue=[];
+        for(let i=1;i<=5;i++)queue.push(deck.next(i,0));
+        prewarmed={deck,queue};
+      }
       const preloader=window.DLYMPhotoPreload;
       if (preloader) {
         const callback=({done,total,failed}) => {
-          ui.start.textContent=`⏳ 正在預載照片 ${done}/${total}`;
+          ui.start.textContent=`⏳ 正在準備首批照片 ${done}/${total}`;
           if (failed) ui.start.textContent+=`（${failed} 張失敗）`;
         };
         const result = incomingInvite && !incomingInvite.invalid
           ? await preloader.duel(incomingInvite.seed,callback)
-          : await preloader.free(callback);
+          : await preloader.free(callback,prewarmed?.queue.map(card=>card.art.file)||[]);
         if (result.failed) {
           alert(`${result.failed} 張照片暫時無法預載。請確認網路再重試，避免遊戲中途出現空白。`);
           return;
         }
       }
       if (incomingInvite && !incomingInvite.invalid) startGame('challenge',incomingInvite.seed,incomingInvite);
-      else startGame('free');
+      else startGame('free',null,null,{prewarmed});
     } catch(e) { console.error(e);alert('預載照片失敗，請檢查網路後重試。'); }
     finally {ui.start.disabled=false;ui.start.textContent=original;preloadingFree=false;}
   });
@@ -699,7 +712,7 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.7.2';
+  const activeBuild = 'v0.7.3';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 99 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 99 張＋玩家投稿';
