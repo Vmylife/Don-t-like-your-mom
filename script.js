@@ -97,6 +97,32 @@
   let lastOutcome = null;
   let dragging = null;
   let momPending = false;
+  let evidenceTarget = null;
+  function repositionEvidenceMarker() {
+    if (!evidenceTarget || !ui.evidenceImage.naturalWidth) return;
+    const frame = ui.evidenceImage.parentElement;
+    if (frame.classList.contains('hidden') || !frame.getClientRects().length) return;
+    const box = ui.evidenceImage.getBoundingClientRect();
+    const parent = frame.getBoundingClientRect();
+    const natW = ui.evidenceImage.naturalWidth, natH = ui.evidenceImage.naturalHeight;
+    // img object-fit:contain may letterbox when the result image gets height-limited.
+    const scale = Math.min(box.width/natW, box.height/natH);
+    const w = natW*scale, h = natH*scale;
+    if (!(w>0 && h>0)) return;
+    const lx = box.left-parent.left+(box.width-w)/2;
+    const ty = box.top-parent.top+(box.height-h)/2;
+    const pct = n => Math.max(0,Math.min(100,Number(n)||0));
+    const ringPct = Number(evidenceTarget.ring) || Math.min(90,(Number(evidenceTarget.size)||16)*3);
+    const diameter = Math.min(w*.86,Math.max(32,w*ringPct/100));
+    // Shift rings inward at edges without losing the person inside the circle.
+    const clamp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+    const cx = clamp(w*pct(evidenceTarget.x)/100,diameter/2,w-diameter/2);
+    const cy = clamp(h*pct(evidenceTarget.y)/100,diameter/2,h-diameter/2);
+    Object.assign(ui.evidenceSpot.style,{
+      left:(lx+cx)+'px',top:(ty+cy)+'px',width:diameter+'px',height:diameter+'px'
+    });
+  }
+  window.addEventListener('resize',()=>requestAnimationFrame(repositionEvidenceMarker));
 
   // Prepare/decode a small deck before the user swipes. Use the SAME decoded
   // <img> node for the visible card, instead of changing src on the old image.
@@ -497,6 +523,7 @@
         const { naturalWidth, naturalHeight } = ui.evidenceImage;
         if (naturalWidth > 0 && naturalHeight > 0) {
           evidenceFrame.style.setProperty('--evidence-aspect', String(naturalWidth / naturalHeight));
+          requestAnimationFrame(repositionEvidenceMarker);
         }
       };
       ui.evidenceImage.src = culprit.image;
@@ -513,29 +540,21 @@
         ui.evidenceIdentity.appendChild(document.createTextNode(' '));
         ui.evidenceIdentity.appendChild(marked);
       }
+      // v0.8.1: image-true hit region (not the cropped/letterboxed evidence frame).
+      // Keep the old large ring convention, while allowing per-photo tuned sizes.
+      evidenceTarget = culprit.spot || null;
       ui.evidenceSpot.className = 'evidence-spot hidden';
       ui.evidenceSpot.style.width = '';
       ui.evidenceSpot.style.height = '';
-      if (culprit.spot) {
-        const isBackgroundMom = culprit.trapType !== 'direct';
-        // v0.4.8: show a broad area rather than trying to circle an exact face.
-        // A background MOM marker is THREE TIMES its original diameter.
-        // Nudge only markers close to the image edge so the larger circle stays visible.
-        const originalSize = Number(culprit.spot.size) || 16;
-        const markerSize = isBackgroundMom ? Math.min(90, originalSize * 3) : originalSize;
-        const originalX = Number(culprit.spot.x) || 50;
-        const markerX = isBackgroundMom
-          ? Math.max(markerSize / 2, Math.min(100 - markerSize / 2, originalX))
-          : originalX;
+      if (evidenceTarget) {
         ui.evidenceSpot.classList.remove('hidden');
-        ui.evidenceSpot.classList.add(isBackgroundMom ? 'spot-small' : 'spot-direct');
-        ui.evidenceSpot.style.left = markerX + '%';
-        ui.evidenceSpot.style.top = culprit.spot.y + '%';
-        ui.evidenceSpot.style.width = markerSize + '%';
-        ui.evidenceSpot.style.height = 'auto';
+        ui.evidenceSpot.classList.add(culprit.trapType === 'direct' ? 'spot-direct' : 'spot-small');
       }
     }
     showScreen('result');
+    if (likedMom && culprit && culprit.spot) {
+      requestAnimationFrame(()=>requestAnimationFrame(repositionEvidenceMarker));
+    }
   }
 
   // Pointer events work with fingers, mice and digital pens.
@@ -613,7 +632,7 @@
     const original = ui.start.textContent;
     try {
       // Only FREE mode loads new community photos. Room duels stay on the fixed
-      // original 99 for identical card orders on both phones.
+      // fixed base deck for identical card orders on both phones.
       const freePlay=!incomingInvite || incomingInvite.invalid;
       if(freePlay) await window.DLYMCommunity?.load();
       // Reserve the first five cards from the REAL free-mode deck. These must
@@ -714,13 +733,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.8.0';
-  document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 99 張內建照片';
+  const activeBuild = 'v0.8.1';
+  document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 107 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
-  if (badge) badge.textContent = activeBuild + ' · 99 張＋玩家投稿';
+  if (badge) badge.textContent = activeBuild + ' · 107 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.8.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.8.1', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();

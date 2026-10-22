@@ -1,20 +1,17 @@
-DON'T LIKE YOUR MOM v0.5.9 — 上榜診斷與顯示版本（只需更新檔）
+DON'T LIKE YOUR MOM v0.8.1｜新增 8 張媽媽亂入＋失敗圈選精準化
 
-已確認線上 GitHub 專案的 JavaScript 是 v0.5.8，但之前的首頁版本顯示被 CSS 隱藏，舊程式也曾錯寫 v0.5.7，無法從玩家手機判斷實際版本。
+上傳 GitHub 專案根目錄，保留各檔案路徑：
+【覆蓋】art-data.js、index.html、script.js、style.css、sw.js
+【新增】achievements.js（承接上一版 v0.8.0 的 49 項成就，若你已經上傳同版，此檔案可覆蓋）
+【新增照片】assets/profiles/hidden_16.webp ～ hidden_23.webp（8 張）
 
-本版：
-- 頂端品牌下顯示由「真正執行的遊戲 JS」設定的 v0.5.9 和 99 張照片，首頁和結果頁都看得到。
-- v0.5.9 HTML、JS、CSS 用新的載入網址參數，Service Worker 同步更新並主動檢查新版本。
-- 完整存活 45 秒時，送榜使用固定 45000ms（數據也保留原始計時供診斷）。
-- 送榜會事先檢查 LIKE、避開媽媽數和 COMBO 的數學關係。
-- 若雲端仍拒絕，失敗欄顯示 v0.5.9、LIKE、MOM DODGED、COMBO、原始與送榜毫秒數；請將截圖傳回，就能分析被 SQL 拒絕的原因。
-- 沒有變動現有 Supabase SQL、排行榜、99 張照片、排行榜金鑰、好友挑戰抽牌與 45 秒規則。
+總照片數：原有 70 張正常＋17 張背景媽＋12 張媽媽本人＝99 張
+這次新增 8 張背景媽 → 70 張正常＋25 張背景媽＋12 張本人＝107 張。
 
-GitHub 更新：
-1. 解壓 ZIP，把 index.html、style.css、script.js、leaderboard.js、sw.js 五檔覆蓋到遊戲根目錄。
-2. Commit changes → 等 GitHub Pages 部署。
-3. 讓朋友先從 Safari 直接開遊戲網站測試新首頁上方是否出現 v0.5.9。舊主畫面 Web App 可完全關閉重開；若仍舊版，移除主畫面圖示後再從 Safari 加入（本機紀錄可能清除，請留意）。
-4. 確認 v0.5.9 後重新玩滿 45 秒、提交分數。
-5. 若還是 Invalid score submission，提供顯示完整診斷碼的畫面；此時最可能是已部署 Supabase 的 SQL 驗證規則與本機提供的 SQL 不同，需用 Supabase SQL Editor 查驗，不能盲目放寬反作弊。
-
-請勿把 Supabase secret 或 service_role 密鑰發給他人或上傳 GitHub。 
+【圈選】
+每張新照片有獨立的媽媽座標與圈圈大小。失敗畫面會對照實際照片的縮放比例與留白位置定位，不再用外框百分比猜媽媽在哪裡；原本 29 張媽媽陷阱也受益。
+【檔案大小】圖片以 WebP 壓縮，最長邊約 1200px，避免拖慢 Android。
+【相容】上一版 v0.8.0 的成就更新包先前無法直接寫入 GitHub，因此這包也包含 49 項成就功能，避免更新時不小心退版。
+【不變】不修改排行榜、投稿系統、雙人對戰的 Supabase SQL；不用重傳其他照片，也不能覆蓋 leaderboard-config.js。
+【注意】好友同步對戰雙方都要重新整理成相同版本，才能同題同序。上傳後打開遊戲確認頂部「v0.8.1 · 107 張」。
+【上線後測試】進自由模式遇到新的 8 張時，錯誤 LIKE → 失敗畫面應圈到手機、酒杯、倒影等媽媽位置；如舊 PWA 快取未更新，關閉重開或用新分頁測試。
