@@ -61,7 +61,9 @@
   }
   async function uploadPrivate(file,path){
     const token=(await authFor('guest')).access_token;
-    return request('/storage/v1/object/dlym-submissions/'+path,{method:'POST',token,body:file,contentType:'image/webp'});
+    const mime=file?.type==='image/jpeg'?'image/jpeg':file?.type==='image/webp'?'image/webp':null;
+    if(!mime)throw new Error('不支援的上傳照片格式。');
+    return request('/storage/v1/object/dlym-submissions/'+path,{method:'POST',token,body:file,contentType:mime});
   }
   async function previewPrivate(path){
     const token=(await authFor('admin')).access_token;
@@ -72,7 +74,7 @@
   }
   async function publishPrivate(path,id){
     const token=(await authFor('admin')).access_token;
-    return request('/storage/v1/object/copy',{method:'POST',token,body:{bucketId:'dlym-submissions',sourceKey:path,destinationBucket:'dlym-approved',destinationKey:'approved/'+id+'.webp'}});
+    return request('/storage/v1/object/copy',{method:'POST',token,body:{bucketId:'dlym-submissions',sourceKey:path,destinationBucket:'dlym-approved',destinationKey:'approved/'+id+(path.endsWith('.jpg')?'.jpg':'.webp')}});
   }
   async function deletePrivate(path){
     const token=(await authFor('admin')).access_token;
@@ -85,7 +87,7 @@
     if(!resp.ok){const json=await resp.json().catch(()=>null);throw new Error(safeError(json,resp.status));}
   }
   function publicPhotoUrl(path){
-    if(!/^approved\/[0-9a-f-]{36}\.webp$/.test(path||''))throw new Error('不合法的公開照片路徑');
+    if(!/^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(path||''))throw new Error('不合法的公開照片路徑');
     return base+'/storage/v1/object/public/dlym-approved/'+path;
   }
   window.DLYMCommunityAPI={base,configured,authFor,adminLogin,rpc,table,uploadPrivate,previewPrivate,publishPrivate,deletePrivate,deletePublic,publicPhotoUrl,logoutAdmin(){save('admin',null)}};

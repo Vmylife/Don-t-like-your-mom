@@ -1,5 +1,5 @@
 /* Offline-ready v0.6.2: visible mobile MOM roasts / first-60 preload; 99 photos unchanged. */
-const VERSION = 'dlym-v0.7.1-daily-champions-20261022';
+const VERSION = 'dlym-v0.7.2-photo-jpeg-fallback-20261023';
 const PHOTO_CACHE = 'dlym-photo-v061';
 const SHELL = ["./","./index.html","./style.css","./script.js","./deck-engine.js","./photo-preload.js","./community-api.js","./community-feed.js","./community-ui.js","./community.css","./submit.html","./admin.html","./live-duel.js","./art-data.js","./leaderboard-config.js","./leaderboard.js","./feedback.js","./manifest.webmanifest","./assets/icon-192-mom-v1.png","./assets/icon-512-mom-v1.png","./assets/apple-touch-icon-mom-v1.png"];
 self.addEventListener('install', event => {

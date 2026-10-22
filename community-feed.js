@@ -13,7 +13,7 @@
       try{
         const incoming=await API.rpc('dlym_approved_photos');
         if(!Array.isArray(incoming))return cards;
-        cards=incoming.filter(x=>x && /^approved\/[0-9a-f-]{36}\.webp$/.test(x.photo_path||'')).map(x=>({
+        cards=incoming.filter(x=>x && /^approved\/[0-9a-f-]{36}\.(webp|jpg)$/.test(x.photo_path||'')).map(x=>({
           file:API.publicPhotoUrl(x.photo_path),
           url:API.publicPhotoUrl(x.photo_path),
           name:String(x.nickname||'玩家投稿').slice(0,24),
