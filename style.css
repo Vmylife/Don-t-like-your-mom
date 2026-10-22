@@ -351,3 +351,35 @@
 }
 /* Diagnostic messages must wrap on iPhones rather than forcing horizontal scroll. */
 .score-submit-status{overflow-wrap:anywhere;word-break:break-word}
+
+/* v0.6.0 simultaneous two-person lobby */
+.screen-duel-lobby {display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:11px;padding:15px 22px max(20px,env(safe-area-inset-bottom,0px));text-align:center;min-height:0;overflow:hidden;}
+.screen-duel-lobby.hidden {display:none!important}
+.duel-hero{font-size:46px;line-height:1.1}
+.screen-duel-lobby h2{font-size:clamp(22px,6vw,30px);margin:0;font-weight:900;color:#fff}
+.duel-explainer{font-size:13px;color:#cbbfd7;line-height:1.55;margin:0}
+.duel-name-label{text-align:left;font-size:12px;font-weight:800;color:#d9cce9}
+.duel-name{width:100%;height:44px;box-sizing:border-box;min-height:0;border:1px solid #ff98c655;border-radius:12px;background:#251c39;color:#fff;font-size:16px;padding:8px 12px;}
+.duel-players{border:1px solid #ffffff26;border-radius:14px;background:#21182f;display:grid;grid-template-columns:1fr;gap:8px;padding:12px;text-align:left;font-size:13px;}
+.duel-status{font-size:12px;min-height:30px;line-height:1.45;color:#8af3d2;overflow-wrap:anywhere}
+.screen-duel-lobby button{min-height:42px;width:100%;font-size:14px;margin:0}
+.duel-result-status{white-space:pre-line;font-size:12px;font-weight:700;color:#baf8dd;background:#20483833;padding:6px;border-radius:10px;line-height:1.35;text-align:center;}
+.duel-refresh{background:transparent;border:1px solid #8af3d255;border-radius:8px;color:#9aead2;font-size:10px;margin:auto;padding:5px 10px}
+.duel-refresh.hidden{display:none}
+@media(max-width:840px){.screen-duel-lobby{gap:clamp(5px,1.1dvh,11px);padding:8px 17px max(14px,env(safe-area-inset-bottom,0px));}.duel-hero{font-size:38px}.duel-explainer{font-size:12px}.duel-name{height:40px}.duel-players{padding:9px;font-size:12px;gap:5px}.screen-duel-lobby button{min-height:40px;padding:8px 10px}.duel-status{font-size:11px}.duel-result-status{font-size:11px}}
+@media(max-height:730px){.screen-duel-lobby{gap:5px}.duel-hero{font-size:29px}.duel-explainer{font-size:10px}.duel-players{padding:6px}.screen-duel-lobby button{min-height:34px}}
+
+/* Space for opponent scores without making the fixed-height result page scroll. */
+@media(max-width:840px){
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-emoji{display:none}
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-title{font-size:clamp(22px,5.5vw,28px)}
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-stats{padding:4px 3px;margin:3px 0}
+ .screen-result:has(.duel-result-status:not(.hidden)) .evidence-photo{height:min(24dvh,190px)!important;min-height:76px}
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-actions{gap:3px;margin:2px 0 0}
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-action-row button{min-height:34px}
+ .screen-result:has(.duel-result-status:not(.hidden)) .result-action-secondary button{min-height:30px}
+ .screen-result:has(.duel-result-status:not(.hidden)) .score-submit{display:none!important}
+ .screen-result:has(.duel-result-status:not(.hidden)) .duel-result-status{font-size:10px;padding:4px;max-height:63px;overflow:hidden}
+ .screen-result:has(.duel-result-status:not(.hidden)) .duel-refresh{font-size:10px;padding:2px 8px;margin-top:2px;}
+ html.keyboard-open .screen-duel-lobby{justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;}
+}

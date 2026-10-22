@@ -49,7 +49,7 @@
   <link rel="manifest" href="./manifest.webmanifest?v=mom-icon-v1">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192-mom-v1.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon-mom-v1.png">
-  <link rel="stylesheet" href="./style.css?v=0.5.9">
+  <link rel="stylesheet" href="./style.css?v=0.6.0">
   <title>DON'T LIKE YOUR MOM — 45 秒滑卡生存挑戰</title>
 </head>
 <body>
@@ -97,6 +97,21 @@
           <button id="openLeaderboardWelcome" class="leaderboard-link" type="button">🏆 全球排行榜 ↗</button>
         </div>
         <div id="challengeInviteInfo" class="challenge-invite-info hidden" aria-live="polite"></div><div class="welcome-bottom">看到媽媽一定要左滑！<strong>右滑媽媽就 GAME OVER</strong></div>
+      </section>
+
+      <section id="duelLobbyScreen" class="screen screen-duel-lobby hidden" aria-label="雙人同步挑戰等候室">
+        <div class="duel-hero">👥</div>
+        <div class="eyebrow">LIVE FRIEND DUEL · 45 SECONDS</div>
+        <h2 id="duelLobbyTitle">雙人同步挑戰</h2>
+        <p class="duel-explainer">先分享邀請 → 兩人準備 → 同時倒數開局<br>照片順序完全相同，誰 LIKE 更多誰贏！</p>
+        <label class="duel-name-label" for="duelPlayerName">你的暱稱</label>
+        <input id="duelPlayerName" class="duel-name" type="text" maxlength="16" inputmode="text" placeholder="例如：不要滑到我媽" autocomplete="nickname" />
+        <div class="duel-players" aria-live="polite"><div>👤 <span id="duelHostName">房主：等待建立…</span></div><div>👤 <span id="duelGuestName">好友：尚未加入</span></div></div>
+        <div id="duelLobbyStatus" class="duel-status" role="status">準備建立房間…</div>
+        <button id="duelCreateJoin" class="primary-button" type="button">建立房間</button>
+        <button id="duelShareInvite" class="secondary-button hidden" type="button">🔗 分享邀請連結</button>
+        <button id="duelReadyButton" class="primary-button hidden" type="button">✓ 我準備好了</button>
+        <button id="duelLeaveButton" class="secondary-button" type="button">← 返回首頁</button>
       </section>
 
       <section id="gameScreen" class="screen screen-game hidden" aria-label="遊戲進行中">
@@ -169,6 +184,8 @@
           </div>
         </div>
         <p id="resultNotice" class="result-notice">只有 45 秒，看看下一局能 LIKE 幾個人。</p>
+        <div id="duelResultStatus" class="duel-result-status hidden" aria-live="polite"></div>
+        <button id="duelResultRefresh" class="duel-refresh hidden" type="button">↻ 同步對手結果</button>
       </section>
       <section id="leaderboardScreen" class="screen screen-leaderboard hidden" aria-label="全球排行榜">
         <div class="board-kicker">🏆 DON'T LIKE YOUR MOM</div>
@@ -184,7 +201,7 @@
         <p class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
         <button id="closeLeaderboard" class="secondary-button board-back" type="button">← 返回遊戲</button>
       </section>
-      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.5.9 · 70 NORMAL + 29 MOM</span></footer>
+      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.6.0 · 70 NORMAL + 29 MOM</span></footer>
     </main>
   </div>
   <script src="./leaderboard-config.js?v=0.5.0"></script>
@@ -192,6 +209,7 @@
   <script src="./leaderboard.js?v=0.5.9"></script>
   <script src="./art-data.js?v=0.5.5"></script>
   <script src="./deck-engine.js?v=0.5.7"></script>
-  <script src="./script.js?v=0.5.9"></script>
+  <script src="./live-duel.js?v=0.6.0"></script>
+  <script src="./script.js?v=0.6.0"></script>
 </body>
 </html>

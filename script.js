@@ -3,7 +3,7 @@
   'use strict';
 
   const $ = id => document.getElementById(id);
-  const SCREENS = { welcome: $('welcomeScreen'), game: $('gameScreen'), result: $('resultScreen') };
+  const SCREENS = { welcome: $('welcomeScreen'), game: $('gameScreen'), result: $('resultScreen'), duel: $('duelLobbyScreen') };
   const ui = {
     start: $('startButton'), retry: $('retryButton'), share: $('shareButton'),
     card: $('swipeCard'), cardArea: $('cardArea'), profileImage: $('profileImage'),
@@ -69,6 +69,7 @@
   const ENGINE = window.DLYMDeckEngine;
   let roundDeck = null;
   let currentMode = 'free';
+  let liveDuelActive = false;
   let currentChallengeSeed = null;
   let currentFriendTarget = null;
   let incomingInvite = ENGINE?.parseInvite(ART) || null;
@@ -298,7 +299,8 @@
     ui.nopeStamp.style.opacity = '0';
     dragging = null;
   }
-  function startGame(mode='free', seed=null, friendTarget=null) {
+  function startGame(mode='free', seed=null, friendTarget=null, opts={}) {
+    liveDuelActive = Boolean(opts.liveDuel);
     if (!ENGINE) { alert('照片抽牌功能未載入，請確認 deck-engine.js 已上傳。'); return; }
     currentMode = mode;
     currentChallengeSeed = mode === 'challenge' ? (seed || ENGINE.newSeed()) : null;
@@ -317,9 +319,10 @@
     if (previewImg && previewImg.parentElement === previewPhoto) previewImg.remove();
     previewImg = null;
     active = true; ended = false; locked = false; momPending = false;
-    ui.share.textContent = mode === 'challenge' ? '👥 分享好友挑戰 ↗' : '分享戰績 ↗';
+    ui.share.textContent = mode === 'challenge' && !liveDuelActive ? '👥 分享好友挑戰 ↗' : '分享戰績 ↗';
     ui.timer.classList.remove('danger');
-    startAt = performance.now();
+    // Online rooms share one Supabase start timestamp; retain elapsed time if polling was late.
+    startAt = performance.now() - Math.max(0, Number(opts.lateMs) || 0);
     endAt = startAt + DURATION;
     ui.timer.textContent = (DURATION / 1000).toFixed(1);
     ui.timerFill.style.width = '100%';
@@ -410,7 +413,9 @@
     ui.evidencePanel.classList.toggle('hidden', !likedMom);
     const roast = MOM_ROASTS[Math.floor(Math.random() * MOM_ROASTS.length)];
     notice.textContent = likedMom ? `👩 媽媽：「${roast}」` : '只有 45 秒，看看下一局能 LIKE 幾個人。';
-    if (currentMode === 'challenge') {
+    if (liveDuelActive) {
+      notice.textContent = '👥 雙人同步對戰，看看誰能在 45 秒內拿到更高分！';
+    } else if (currentMode === 'challenge') {
       if (currentFriendTarget && currentFriendTarget.target != null) {
         const friend = currentFriendTarget;
         const won = (survived && !friend.survived) || (survived === friend.survived && score > friend.target);
@@ -418,7 +423,17 @@
         notice.textContent = `${won ? '🏆 你贏了！' : tie ? '🤝 平手！' : '🎯 再挑戰！'} 你 ${score} LIKE ${survived ? '（存活）' : '（失敗）'} · 朋友 ${friend.target} LIKE ${friend.survived ? '（存活）' : '（失敗）'}`;
       } else notice.textContent = '👥 同一組照片已鎖定，點「分享好友挑戰」邀朋友 PK！';
     }
-    lastOutcome = { likedMom, score, avoided, elapsed, maxCombo, mode:currentMode, seed:currentChallengeSeed };
+    lastOutcome = { likedMom, score, avoided, elapsed, maxCombo, mode:liveDuelActive?'live-duel':currentMode, seed:currentChallengeSeed };
+    if (liveDuelActive) {
+      const status = $('duelResultStatus');
+      if (status) {status.textContent = '⏳ 等待好友同步成績…';status.classList.remove('hidden');}
+      $('duelResultRefresh')?.classList.remove('hidden');
+      window.DLYMDuel?.finish({score,survived});
+    } else {
+      const status = $('duelResultStatus');
+      if (status) status.classList.add('hidden');
+      $('duelResultRefresh')?.classList.add('hidden');
+    }
     // SQL verifies best_combo <= likes + mom dodges. A valid combo includes
     // both direct MOMs and background MOMs. Send the TOTAL, not only hidden
     // background MOMs, or a flawless round can be rejected as invalid.
@@ -513,6 +528,13 @@
   ui.nope.addEventListener('click', () => swipe('nope'));
   ui.like.addEventListener('click', () => swipe('like'));
   function refreshInvite() {
+    if (window.DLYMDuel?.incoming) {
+      ui.start.textContent = '加入好友房間 ➜';
+      friendBtn.textContent = '👥 房間等候室';
+      inviteInfo.textContent = '朋友邀你同步開玩！進房間後兩人準備好，會一起倒數 3、2、1。';
+      inviteInfo.classList.remove('hidden');
+      return;
+    }
     if (incomingInvite?.invalid) {
       inviteInfo.textContent = incomingInvite.reason;
       inviteInfo.classList.remove('hidden');
@@ -534,21 +556,23 @@
     }
   }
   ui.start.addEventListener('click', () => {
+    if (window.DLYMDuel?.incoming) {window.DLYMDuel.open(true);return;}
     if (incomingInvite && !incomingInvite.invalid) startGame('challenge',incomingInvite.seed,incomingInvite);
     else startGame('free');
   });
-  friendBtn.addEventListener('click', () => {
-    if (incomingInvite) {
-      incomingInvite = null;
-      const url = new URL(location.href);
-      url.searchParams.delete('duel');url.searchParams.delete('deck');url.searchParams.delete('target');url.searchParams.delete('won');
-      history.replaceState(null,'',url.toString());
-      refreshInvite();
-      startGame('free');
-    } else startGame('challenge');
+  // v0.6.0: Create/share a room BEFORE playing; both devices start together.
+  friendBtn.addEventListener('click', () => window.DLYMDuel?.open(Boolean(window.DLYMDuel?.incoming)));
+  ui.retry.addEventListener('click', () => {
+    if (liveDuelActive) { window.DLYMDuel?.abandon(); window.DLYMDuel?.open(false); }
+    else startGame(currentMode,currentMode === 'challenge' ? currentChallengeSeed : null,currentFriendTarget);
   });
-  ui.retry.addEventListener('click', () => startGame(currentMode,currentMode === 'challenge' ? currentChallengeSeed : null,currentFriendTarget));
+  window.DLYMDuel?.setCallbacks({
+    show: showScreen,
+    start: (roomSeed,lateMs) => startGame('challenge',roomSeed,null,{liveDuel:true,lateMs}),
+    exit: () => {liveDuelActive=false; showScreen('welcome');refreshInvite();}
+  });
   $('homeButton').addEventListener('click', () => {
+    if (liveDuelActive) {window.DLYMDuel?.abandon();liveDuelActive=false;}
     // No result dialog, timer, or pending swipe should continue on home.
     active = false; ended = true; locked = false; momPending = false;
     if (frame) { cancelAnimationFrame(frame); frame = null; }
@@ -578,7 +602,7 @@
     const message = lastOutcome.likedMom
       ? `💔 DON'T LIKE YOUR MOM！我在 ${(lastOutcome.elapsed / 1000).toFixed(1)} 秒內成功 LIKE ${lastOutcome.score} 人，結果還是誤滑到媽媽了！你敢挑戰嗎？`
       : `🏆 DON'T LIKE YOUR MOM！我在 45 秒內成功 LIKE ${lastOutcome.score} 位交友對象！你能破我的紀錄嗎？`;
-    const text = lastOutcome.mode === 'challenge'
+    const text = lastOutcome.mode === 'live-duel' ? `${message}\n${new URL(location.pathname,location.origin).toString()}` : lastOutcome.mode === 'challenge'
       ? `👥 DON'T LIKE YOUR MOM 好友同題挑戰！${lastOutcome.likedMom ? '我誤滑媽媽了' : '我活過了 45 秒'}，獲得 ${lastOutcome.score} LIKE。你能贏我嗎？\n${ENGINE.challengeUrl(ART,lastOutcome.seed,lastOutcome)}`
       : message + '\n' + new URL(location.pathname,location.origin).toString();
     if (navigator.share) {
@@ -603,14 +627,15 @@
   });
   ui.best.textContent = best;
   refreshInvite();
+  if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.5.9';
+  const activeBuild = 'v0.6.0';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 70 NORMAL + 29 MOM';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 99 張照片';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.5.9', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.6.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();
