@@ -1,0 +1,26 @@
+{
+  "name": "DON'T LIKE YOUR MOM",
+  "short_name": "Don't Like Mom",
+  "description": "45 秒滑卡生存挑戰——千萬不要右滑到媽媽！",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121024",
+  "theme_color": "#121024",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./assets/icon-192-mom-v1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icon-512-mom-v1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

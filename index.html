@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#121024">
+  <meta name="description" content="45 秒挑戰：左滑避開媽媽，右滑 LIKE 一般交友對象！">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const installed = Boolean(navigator.standalone ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
+      if (ios && installed) root.classList.add('pwa-standalone');
+      // Safari's 100dvh can exclude the entire home-indicator region and a
+      // second bottom band in standalone mode. screen.height is the panel's
+      // full height in CSS px (402×874 on the reference iPhone 18 Pro).
+      function sizeApp(){
+        if (window.innerWidth > 840) return;
+        const visible = Math.round(window.visualViewport?.height || window.innerHeight);
+        const layout = Math.round(window.innerHeight);
+        const display = Math.round(window.screen?.height || layout);
+        const keyboard = root.classList.contains('keyboard-open');
+        // A 1206×2622 capture corresponds to 402×874 CSS px. Some WebKit
+        // builds report a shorter value for BOTH vh and screen.height in PWAs.
+        const iphoneProReference = ios && installed &&
+          window.innerWidth >= 400 && window.innerWidth <= 404 &&
+          window.innerHeight > 600 && window.innerWidth < window.innerHeight ? 874 : 0;
+        const full = ios && installed && !keyboard ?
+          Math.max(visible, layout, display, iphoneProReference) :
+          (keyboard ? visible : Math.max(visible,layout));
+        root.style.setProperty('--dlym-display-height', full+'px');
+      }
+      sizeApp();
+      window.addEventListener('resize',sizeApp,{passive:true});
+      window.addEventListener('orientationchange',sizeApp,{passive:true});
+      window.visualViewport?.addEventListener('resize',sizeApp,{passive:true});
+      window.addEventListener('focusin',()=>requestAnimationFrame(sizeApp));
+      window.addEventListener('focusout',()=>requestAnimationFrame(sizeApp));
+      document.addEventListener('visibilitychange',()=>{if(!document.hidden)sizeApp()});
+    })();
+  </script>
+  <meta property="og:title" content="DON'T LIKE YOUR MOM 💔">
+  <meta property="og:description" content="真人照片版：45 秒內 LIKE 最多人，千萬別滑到媽媽！">
+  <link rel="manifest" href="./manifest.webmanifest?v=mom-icon-v1">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192-mom-v1.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon-mom-v1.png">
+  <link rel="stylesheet" href="./style.css?v=0.5.9">
+  <title>DON'T LIKE YOUR MOM — 45 秒滑卡生存挑戰</title>
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+  <div class="desktop-layout">
+    <aside class="desktop-intro">
+      <div class="desktop-kicker"><span class="live-dot"></span> 45-SECOND SWIPE CHALLENGE</div>
+      <h1>DON'T<br>LIKE<br><span>YOUR MOM.</span></h1>
+      <p>媽媽真的無所不在。<br>45 秒內別把媽媽滑成 LIKE。</p>
+      <div class="desktop-detail"><span>01</span> 媽媽會藏在別人的照片裡</div>
+      <div class="desktop-detail"><span>02</span> 還可能藏在鏡子與街頭人群中</div>
+      <div class="desktop-detail"><span>03</span> 右滑一般人物得分，媽媽右滑就輸</div>
+      <small>包含本次上傳的純路人照片與媽媽亂入陷阱，人物資料均為虛構。</small>
+    </aside>
+
+    <main class="app" aria-label="Don't Like Your Mom 遊戲">
+      <header class="app-header">
+        <div class="app-brand"><span class="brand-heart">♥</span><span class="brand-label">don't like <strong>your mom.</strong><small id="gameVersionBadge" class="game-version-badge" aria-label="實際載入的遊戲版本">版本確認中…</small></span></div>
+        <div class="header-controls">
+          <button id="soundToggle" class="icon-toggle" type="button" aria-label="音效開關" aria-pressed="true">🔊</button>
+          <button id="vibrationToggle" class="icon-toggle" type="button" aria-label="震動開關" aria-pressed="true">📳</button>
+          <span class="header-pill">SWIPE SURVIVAL</span>
+        </div>
+      </header>
+
+      <section id="welcomeScreen" class="screen screen-welcome" aria-labelledby="welcomeTitle">
+        <div class="welcome-art" aria-hidden="true">
+          <div class="welcome-decoration deco-one"></div>
+          <div class="welcome-decoration deco-two"></div>
+          <div class="welcome-portrait"><img src="./assets/profiles/mom_01.webp" alt=""></div>
+          <span class="welcome-sticker sticker-no">NOPE ✕</span>
+          <span class="welcome-sticker sticker-love">LIKE ♥</span>
+          <div class="welcome-bubble">HI, SWEETIE! 👋</div>
+        </div>
+        <div class="welcome-copy">
+          <div class="eyebrow">THE MOST AWKWARD DATING APP</div>
+          <h2 id="welcomeTitle">別把你媽<br><em>滑成喜歡。</em></h2>
+          <p>45 秒內盡量右滑 LIKE 正常人物得分！<br>看到媽媽一定要左滑 NOPE，右滑她就直接輸！</p>
+        </div>
+        <div class="rules-line"><span><b>←</b> 左滑媽媽避開</span><span><b>→</b> LIKE 正常人物 +1</span></div>
+        <button id="startButton" class="primary-button" type="button">開始滑卡 <span aria-hidden="true">➜</span></button>
+        <div class="welcome-extra-actions">
+          <button id="friendChallengeButton" class="friend-challenge-button" type="button">👥 挑戰朋友</button>
+          <button id="openLeaderboardWelcome" class="leaderboard-link" type="button">🏆 全球排行榜 ↗</button>
+        </div>
+        <div id="challengeInviteInfo" class="challenge-invite-info hidden" aria-live="polite"></div><div class="welcome-bottom">看到媽媽一定要左滑！<strong>右滑媽媽就 GAME OVER</strong></div>
+      </section>
+
+      <section id="gameScreen" class="screen screen-game hidden" aria-label="遊戲進行中">
+        <div class="hud-top">
+          <div class="hud-timer"><span class="tiny-label">TIME LEFT</span><div class="timer-value"><span id="timerValue">45.0</span><small>S</small></div></div>
+          <div class="hud-score"><span class="tiny-label">LIKES</span><div class="score-value"><span id="scoreValue">0</span><span class="heart-small">♥</span></div></div>
+          <div class="hud-best"><span class="tiny-label">BEST</span><div id="bestValue" class="best-value">0</div></div>
+        </div>
+        <div class="timer-track"><div id="timerFill" class="timer-fill"></div></div>
+        <div class="stage-line"><div><span id="stagePill" class="stage-pill">LEVEL 1</span><strong id="stageName">一眼認出媽媽</strong></div><span id="comboChip" class="combo-chip" aria-live="polite"></span></div>
+        <div id="cardArea" class="card-area" aria-label="交友卡片">
+          <div class="stack-card stack-back" aria-hidden="true"></div>
+          <div class="stack-card stack-mid" aria-hidden="true"></div>
+          <article id="swipeCard" class="swipe-card" aria-label="當前交友卡片">
+            <div class="profile-photo">
+              <img id="profileImage" src="./assets/profiles/mom_01.webp" alt="交友照片">
+              <span id="likeStamp" class="swipe-stamp like-stamp" aria-hidden="true">LIKE ♥</span>
+              <span id="nopeStamp" class="swipe-stamp nope-stamp" aria-hidden="true">NOPE ✕</span>
+              <div class="photo-gradient" aria-hidden="true"></div>
+              <div class="profile-photo-label">✦ DISCOVER</div>
+            </div>
+            <div class="profile-details">
+              <div class="identity-line"><h3 id="profileName">Jessie <span>26</span></h3><span class="verified" title="虛構個人資料">✦</span></div>
+              <p id="profileBio">喜歡散步、咖啡與周末旅行。</p>
+              <div class="distance-row">⌖ <span id="profileCity">台北</span> <span class="dot-separator">·</span> 正在尋找緣分</div>
+            </div>
+          </article>
+        </div>
+        <div class="actions">
+          <button id="nopeButton" class="swipe-action nope-action" type="button" aria-label="左滑，不喜歡"><span>✕</span><small>NOPE</small></button>
+          <div class="action-instruction">左右滑動卡片<br>或點擊按鈕</div>
+          <button id="likeButton" class="swipe-action like-action" type="button" aria-label="右滑，喜歡"><span>♥</span><small>LIKE</small></button>
+        </div>
+        <p class="game-footnote">注意：照片任何角落有媽媽都不能 LIKE！</p>
+      </section>
+
+      <section id="resultScreen" class="screen screen-result hidden" aria-labelledby="resultTitle">
+        <div id="resultEmoji" class="result-emoji" aria-hidden="true">💔</div>
+        <div id="resultEyebrow" class="result-eyebrow">MOM ALERT</div>
+        <h2 id="resultTitle" class="result-title">YOU LIKED<br>YOUR MOM.</h2>
+        <p id="resultSubtitle" class="result-subtitle">BRO. THAT'S YOUR MOM.</p>
+        <div id="evidencePanel" class="evidence-panel hidden">
+          <div class="evidence-heading">你剛剛右滑了這張…</div>
+          <div class="evidence-photo"><img id="evidenceImage" src="./assets/profiles/mom_01.webp" alt="剛剛出錯的交友卡片"><div id="evidenceSpot" class="evidence-spot hidden" aria-hidden="true"></div></div>
+          <div id="evidenceIdentity" class="evidence-identity"></div>
+          <p id="evidenceReason" class="evidence-reason"></p>
+        </div>
+        <div class="result-stats">
+          <div><small>LIKES</small><strong id="finalScore">0</strong></div>
+          <div><small>TIME SURVIVED</small><strong id="finalTime">0.0s</strong></div>
+          <div><small>HIDDEN MOMS</small><strong id="finalAvoided">0</strong></div>
+        </div>
+        <div id="recordMessage" class="record-message hidden">★ NEW PERSONAL BEST ★</div>
+        <section id="scoreSubmitArea" class="score-submit hidden" aria-label="送出全球排行戰績">
+          <label for="leaderboardNickname">🏆 全球排行榜暱稱</label>
+          <div class="submit-row">
+            <input id="leaderboardNickname" type="text" maxlength="16" placeholder="輸入 2～16 字暱稱" autocomplete="nickname" aria-label="排行榜暱稱">
+            <button id="submitScoreBtn" type="button">送出</button>
+          </div>
+          <p id="scoreSubmitStatus" class="score-submit-status" aria-live="polite"></p>
+        </section>
+        <div class="result-actions">
+          <div class="result-action-row">
+            <button id="retryButton" class="primary-button" type="button">再來一局 <span aria-hidden="true">↻</span></button>
+            <button id="homeButton" class="secondary-button home-button" type="button">⌂ 回首頁</button>
+          </div>
+          <div class="result-action-row result-action-secondary">
+            <button id="shareButton" class="secondary-button" type="button">分享戰績 ↗</button>
+            <button id="openLeaderboardResult" class="leaderboard-link" type="button">🏆 全球排行榜 ↗</button>
+          </div>
+        </div>
+        <p id="resultNotice" class="result-notice">只有 45 秒，看看下一局能 LIKE 幾個人。</p>
+      </section>
+      <section id="leaderboardScreen" class="screen screen-leaderboard hidden" aria-label="全球排行榜">
+        <div class="board-kicker">🏆 DON'T LIKE YOUR MOM</div>
+        <h2>全球排行榜</h2>
+        <p class="board-intro">活過完整 45 秒才能上榜。右滑媽媽直接失敗！</p>
+        <div class="board-tabs" role="group" aria-label="排行榜期間">
+          <button id="boardAllBtn" type="button" aria-pressed="true">🌍 歷史總榜</button>
+          <button id="boardTodayBtn" type="button" aria-pressed="false">📅 今日榜</button>
+          <button id="refreshLeaderboard" class="board-refresh" type="button" aria-label="重新整理排行榜">↻</button>
+        </div>
+        <p id="leaderboardStatus" class="board-status" aria-live="polite">載入中…</p>
+        <ol id="leaderboardRows" class="board-list" aria-label="排行榜成績"></ol>
+        <p class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
+        <button id="closeLeaderboard" class="secondary-button board-back" type="button">← 返回遊戲</button>
+      </section>
+      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.5.9 · 70 NORMAL + 29 MOM</span></footer>
+    </main>
+  </div>
+  <script src="./leaderboard-config.js?v=0.5.0"></script>
+  <script src="./feedback.js?v=0.5.0"></script>
+  <script src="./leaderboard.js?v=0.5.9"></script>
+  <script src="./art-data.js?v=0.5.5"></script>
+  <script src="./deck-engine.js?v=0.5.7"></script>
+  <script src="./script.js?v=0.5.9"></script>
+</body>
+</html>
