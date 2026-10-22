@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171125"><meta name="robots" content="noindex">
+  <title>我要投稿｜DON'T LIKE YOUR MOM</title>
+  <link rel="stylesheet" href="./community.css?v=0.7.0">
+</head>
+<body class="community-page">
+  <main class="community-shell">
+    <a class="back-link" href="./">← 返回遊戲</a>
+    <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
+    <h1>📸 我要投稿</h1>
+    <p class="lead">投稿你的日常生活照，讓全世界的玩家在滑卡時遇到你！<br><strong>所有投稿都須經站長審核，通過後才會公開。</strong></p>
+    <form id="communitySubmissionForm" class="community-panel">
+      <label class="field-label" for="communityPhoto">生活照片（限本人或取得同意的成年人）</label>
+      <input id="communityPhoto" type="file" accept="image/*" required>
+      <div class="preview-box"><img id="communityPreview" alt="本次投稿的照片預覽" hidden><span id="previewPlaceholder">選擇照片後可在這裡預覽</span></div>
+      <p class="hint">JPG / PNG / iPhone 照片皆可嘗試；送出前轉為 WebP，去除 EXIF 定位等中繼資料。最多 8 MB 原始照片。</p>
+      <div class="field-grid">
+        <div><label class="field-label" for="communityName">遊戲暱稱</label><input id="communityName" type="text" minlength="1" maxlength="24" required placeholder="例：路邊喝咖啡的阿傑"></div>
+        <div><label class="field-label" for="communityAge">年齡（18 歲以上）</label><input id="communityAge" type="number" min="18" max="99" required value="25"></div>
+      </div>
+      <label class="field-label" for="communityCity">城市</label><input id="communityCity" type="text" maxlength="24" required placeholder="例：高雄">
+      <label class="field-label" for="communityBio">卡片個人介紹</label><textarea id="communityBio" rows="3" minlength="1" maxlength="100" required placeholder="例：放假只想散步、吃拉麵和睡覺。"></textarea>
+      <label class="consent-line"><input id="communityConsent" type="checkbox" required><span>我已年滿 18 歲，照片中可辨識人物也都年滿 18 歲，且我已取得所有入鏡者同意，授權本遊戲公開展示及使用這張照片。</span></label>
+      <p class="hint">請勿上傳裸露、不雅、暴力、侵權、冒用他人、含住址或證件等個資的照片。每位投稿者每 24 小時最多 3 件，站長有權拒絕或下架。投稿者如需撤回照片，請透過專案聯絡站長。</p>
+      <button id="communitySend" class="pink-button" type="submit">送出投稿，等待審核 →</button>
+      <p id="communityStatus" class="status-box" role="status" aria-live="polite"></p>
+    </form>
+    <p class="tiny-note">照片尚未核准前只存放在私人儲存區，不會進入滑卡庫。首次投稿可能需要多等幾秒建立匿名身份。</p>
+  </main>
+  <script src="./leaderboard-config.js?v=0.5.0"></script>
+  <script src="./community-api.js?v=0.7.0"></script>
+  <script src="./community-ui.js?v=0.7.0"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM — v0.6.1: submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
+/* DON'T LIKE YOUR MOM — v0.7.0: visible MOM roasts on mobile and live duels; submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
 (() => {
   'use strict';
 
@@ -76,6 +76,8 @@
   const inviteInfo = $('challengeInviteInfo');
   const friendBtn = $('friendChallengeButton');
   const notice = $('resultNotice');
+  const momRoast = $('momRoast');
+  let previousRoastIndex = -1; // no identical roast on consecutive failures
   const MOM_ROASTS = [
     '寶貝，你是在找對象還是在找媽媽？','我已經截圖傳給你爸了。',
     '我是你媽耶！眼鏡要不要換一副？','回家洗碗，順便反省一下。',
@@ -241,7 +243,7 @@
   function makeProfile(art) {
     const idx = ((art.persona || 1) - 1) % 64;
     return {
-      image: `./assets/profiles/${art.file}`,
+      image: art.url || `./assets/profiles/${art.file}`,
       name: art.name || NAMES[idx],
       age: art.age || (22 + (idx * 7) % 19),
       bio: art.bio || BIOS[(idx * 7 + 3) % BIOS.length],
@@ -336,7 +338,7 @@
     currentMode = mode;
     currentChallengeSeed = mode === 'challenge' ? (seed || ENGINE.newSeed()) : null;
     currentFriendTarget = mode === 'challenge' ? friendTarget : null;
-    roundDeck = ENGINE.create(ART, {mode,seed:currentChallengeSeed});
+    roundDeck = ENGINE.create(mode === 'free' ? (window.DLYMCommunity?.artForFree(ART) || ART) : ART, {mode,seed:currentChallengeSeed});
     if (pendingTransition) { clearTimeout(pendingTransition); pendingTransition = null; }
     if (frame) cancelAnimationFrame(frame);
     score = 0; avoided = 0; hiddenAvoided = 0; skipped = 0; combo = 0; maxCombo = 0; shown = 0;
@@ -443,8 +445,19 @@
     ui.finalAvoided.textContent = hiddenAvoided;
     ui.recordMessage.classList.toggle('hidden', !isNewRecord);
     ui.evidencePanel.classList.toggle('hidden', !likedMom);
-    const roast = MOM_ROASTS[Math.floor(Math.random() * MOM_ROASTS.length)];
-    notice.textContent = likedMom ? `👩 媽媽：「${roast}」` : '只有 45 秒，看看下一局能 LIKE 幾個人。';
+    // The original resultNotice is hidden on mobile (space-saving CSS), and
+    // friend-duel text can overwrite it. Keep MOM's random roast in its OWN
+    // visible result block so it appears in free play and both friend modes.
+    const roastIndex = previousRoastIndex < 0
+      ? Math.floor(Math.random() * MOM_ROASTS.length)
+      : (previousRoastIndex + 1 + Math.floor(Math.random() * (MOM_ROASTS.length - 1))) % MOM_ROASTS.length;
+    previousRoastIndex = roastIndex;
+    const roast = MOM_ROASTS[roastIndex];
+    if (momRoast) {
+      momRoast.textContent = likedMom ? `👩 媽媽說：「${roast}」` : '';
+      momRoast.classList.toggle('hidden', !likedMom);
+    }
+    notice.textContent = likedMom ? '下次先認清楚媽媽，再來挑戰！' : '只有 45 秒，看看下一局能 LIKE 幾個人。';
     if (liveDuelActive) {
       notice.textContent = '👥 雙人同步對戰，看看誰能在 45 秒內拿到更高分！';
     } else if (currentMode === 'challenge') {
@@ -484,7 +497,7 @@
       ui.evidenceImage.src = culprit.image;
       if (ui.evidenceImage.complete && ui.evidenceImage.naturalWidth) ui.evidenceImage.onload();
       ui.evidenceImage.alt = `${culprit.name}，剛剛沒發現的媽媽陷阱`;
-      ui.evidenceReason.textContent = '↳ ' + culprit.reason + (currentMode === 'challenge' ? ` · 媽媽：「${roast}」` : '');
+      ui.evidenceReason.textContent = '↳ ' + culprit.reason;
       ui.evidenceIdentity.replaceChildren();
       const lead = document.createTextNode(`${culprit.name}，${culprit.age} 歲`);
       const label = document.createElement('span');
@@ -594,6 +607,9 @@
     ui.start.disabled=true;
     const original = ui.start.textContent;
     try {
+      // Only FREE mode loads new community photos. Room duels stay on the fixed
+      // original 99 for identical card orders on both phones.
+      if (!incomingInvite || incomingInvite.invalid) await window.DLYMCommunity?.load();
       const preloader=window.DLYMPhotoPreload;
       if (preloader) {
         const callback=({done,total,failed}) => {
@@ -615,6 +631,7 @@
   });
   // v0.6.0: Create/share a room BEFORE playing; both devices start together.
   friendBtn.addEventListener('click', () => window.DLYMDuel?.open(Boolean(window.DLYMDuel?.incoming)));
+  $('openSubmitPhotos')?.addEventListener('click', () => { location.href='./submit.html'; });
   ui.retry.addEventListener('click', () => {
     if (liveDuelActive) { window.DLYMDuel?.abandon(); window.DLYMDuel?.open(false); }
     else startGame(currentMode,currentMode === 'challenge' ? currentChallengeSeed : null,currentFriendTarget);
@@ -682,13 +699,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.6.1';
-  document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 70 NORMAL + 29 MOM';
+  const activeBuild = 'v0.7.0';
+  document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 99 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
-  if (badge) badge.textContent = activeBuild + ' · 99 張照片';
+  if (badge) badge.textContent = activeBuild + ' · 99 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.6.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.7.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();

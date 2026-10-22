@@ -10,7 +10,7 @@
   const pending = new Map();
   let remainderStarted=false;
   let cachePromise;
-  function imageUrl(file) { return new URL('./assets/profiles/' + file, location.href).href; }
+  function imageUrl(file) { return /^https:\/\//i.test(file) ? file : new URL('./assets/profiles/' + file, location.href).href; }
   function photoCache() {
     if (!cachePromise) cachePromise = ('caches' in window ? caches.open(CACHE).catch(() => null) : Promise.resolve(null));
     return cachePromise;
@@ -59,7 +59,8 @@
   function freeFiles() {
     // 45 normal / 10 hidden / 5 direct; distinct assets; background download
     // continues opportunistically after the round begins.
-    const result = [...shuffle(ART.normal.map(v=>v.file)).slice(0,45),
+    const freeArt=window.DLYMCommunity?.artForFree(ART)||ART;
+    const result = [...shuffle(freeArt.normal.map(v=>v.file)).slice(0,45),
       ...shuffle(ART.background.map(v=>v.file)).slice(0,10),
       ...shuffle(ART.direct.map(v=>v.file)).slice(0,5)];
     return shuffle([...new Set(result)]).slice(0,COUNT);
@@ -93,7 +94,8 @@
   const duel = (seed,cb) => prepare(duelFiles(seed),cb);
   function remainder() {
     // Low-priority background fetch of the rest: at most one request at a time.
-    const all=[...ART.normal,...ART.background,...ART.direct].map(v=>v.file);
+    const base=window.DLYMCommunity?.artForFree(ART)||ART;
+    const all=[...base.normal,...base.background,...base.direct].map(v=>v.file);
     const queue=shuffle([...new Set(all)]);
     const idle=window.requestIdleCallback || (callback => setTimeout(callback,1100));
     if (remainderStarted) return;

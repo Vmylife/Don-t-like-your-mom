@@ -392,3 +392,38 @@
 }
 .profile-photo .photo-loading-indicator.hidden {display:none!important}
 .profile-photo .photo-loading-indicator:disabled {opacity:1;cursor:progress}
+
+
+/* v0.6.2 — the original .result-notice is display:none on mobile; keep MOM
+   dialogue on its own visible row. Use a text-only box (no new images). */
+.mom-roast{
+  margin:9px auto 10px;max-width:380px;width:100%;padding:10px 13px;
+  border:1px solid #ff8cba88;border-radius:13px;
+  background:linear-gradient(115deg,#ff549822,#a852d21b);
+  color:#ffd4e4;font-size:clamp(12px,3.45vw,15px);
+  font-weight:850;line-height:1.45;letter-spacing:.1px;text-align:center;
+  box-shadow:0 5px 22px #e7377720;flex:0 0 auto;
+  overflow-wrap:anywhere;
+}
+@media(max-width:840px){
+  .mom-roast{margin:3px auto 6px;padding:8px 9px;
+    font-size:clamp(12px,3.4vw,14px);line-height:1.35}
+  .screen-result:has(.mom-roast:not(.hidden)) .evidence-photo{
+    height:min(33dvh,calc(100dvh - 540px),290px)!important;
+    min-height:98px;
+  }
+}
+@media(max-width:840px) and (max-height:735px){
+  .mom-roast{margin:2px auto 4px;padding:6px 8px;line-height:1.22;font-size:12px}
+  .screen-result:has(.mom-roast:not(.hidden)) .evidence-photo{
+    height:min(27dvh,calc(100dvh - 530px))!important;
+    min-height:84px;
+  }
+}
+
+/* v0.7.0: keep three welcome actions on one compact line. */
+.welcome-extra-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.welcome-extra-actions button{white-space:normal;line-height:1.25;font-size:clamp(10px,2.85vw,13px);padding:10px 3px}
+.community-submit-button{background:#ffffff0d;border:1px solid #fca7c471;border-radius:14px;color:#ffe4ed;font-weight:900}
+@media(max-width:840px){.welcome-extra-actions button{padding:8px 3px;min-height:39px}}
+@media(max-width:355px){.welcome-extra-actions{gap:4px}.welcome-extra-actions button{font-size:10px;padding:6px 2px}}
