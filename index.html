@@ -49,7 +49,7 @@
   <link rel="manifest" href="./manifest.webmanifest?v=mom-icon-v1">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192-mom-v1.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon-mom-v1.png">
-  <link rel="stylesheet" href="./style.css?v=0.7.0">
+  <link rel="stylesheet" href="./style.css?v=0.7.1">
   <title>DON'T LIKE YOUR MOM — 45 秒滑卡生存挑戰</title>
 </head>
 <body>
@@ -196,25 +196,28 @@
         <div class="board-tabs" role="group" aria-label="排行榜期間">
           <button id="boardAllBtn" type="button" aria-pressed="true">🌍 歷史總榜</button>
           <button id="boardTodayBtn" type="button" aria-pressed="false">📅 今日榜</button>
+          <button id="boardChampionsBtn" type="button" aria-pressed="false">🏅 歷代日冠</button>
           <button id="refreshLeaderboard" class="board-refresh" type="button" aria-label="重新整理排行榜">↻</button>
         </div>
         <p id="leaderboardStatus" class="board-status" aria-live="polite">載入中…</p>
+        <div id="boardProvisional" class="board-provisional hidden" aria-live="polite"></div>
         <ol id="leaderboardRows" class="board-list" aria-label="排行榜成績"></ol>
-        <p class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
+        <button id="boardLoadMore" class="board-load-more hidden" type="button">載入更早的日冠 ↓</button>
+        <p id="boardFootnote" class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
         <button id="closeLeaderboard" class="secondary-button board-back" type="button">← 返回遊戲</button>
       </section>
-      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.7.0 · 99 張內建照片</span></footer>
+      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.7.1 · 99 張內建照片</span></footer>
     </main>
   </div>
   <script src="./leaderboard-config.js?v=0.5.0"></script>
   <script src="./feedback.js?v=0.5.0"></script>
-  <script src="./leaderboard.js?v=0.5.9"></script>
+  <script src="./leaderboard.js?v=0.7.1"></script>
   <script src="./art-data.js?v=0.5.5"></script>
   <script src="./deck-engine.js?v=0.5.7"></script>
   <script src="./community-api.js?v=0.7.0"></script>
   <script src="./community-feed.js?v=0.7.0"></script>
   <script src="./photo-preload.js?v=0.7.0"></script>
   <script src="./live-duel.js?v=0.6.1"></script>
-  <script src="./script.js?v=0.7.0"></script>
+  <script src="./script.js?v=0.7.1"></script>
 </body>
 </html>

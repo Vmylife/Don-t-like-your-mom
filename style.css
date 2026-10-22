@@ -427,3 +427,29 @@
 .community-submit-button{background:#ffffff0d;border:1px solid #fca7c471;border-radius:14px;color:#ffe4ed;font-weight:900}
 @media(max-width:840px){.welcome-extra-actions button{padding:8px 3px;min-height:39px}}
 @media(max-width:355px){.welcome-extra-actions{gap:4px}.welcome-extra-actions button{font-size:10px;padding:6px 2px}}
+
+/* v0.7.1 — archives of daily champions. Keep all 3 tabs usable on 320px phones. */
+.board-tabs{gap:5px}
+.board-tabs button{font-size:11px;padding:10px 3px;white-space:nowrap}
+.board-tabs .board-refresh{flex:0 0 38px;font-size:20px}
+.board-champion{background:linear-gradient(105deg,#f5ab2720,#ffffff0b);border-color:#f8cf704a;}
+.board-champion .board-rank{font-size:20px}
+.board-champion-info{display:flex;flex-direction:column;gap:4px;min-width:0;overflow:hidden}
+.board-champion-date{color:#ffd486;font-size:11px;font-weight:900;letter-spacing:.45px;font-variant-numeric:tabular-nums}
+.board-champion-player{display:block;max-width:100%;font-size:14px}
+.board-provisional{flex:0 0 auto;display:flex;flex-direction:column;gap:3px;align-items:center;
+  background:linear-gradient(120deg,#fbbd3040,#ed5c9e19);border:1px solid #ffd57a67;
+  border-radius:12px;padding:9px 10px;margin:0 0 9px;color:#fff;}
+.board-provisional-label{color:#ffe1a1;font-size:11px;font-weight:900}
+.board-provisional-player{font-size:15px;font-weight:900;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-provisional-score{font-size:11px;color:#e7dae7;font-weight:700;}
+.board-load-more{flex:0 0 auto;width:100%;padding:9px;margin:6px 0;border:1px solid #ffd27875;
+  background:#fbc5471d;color:#ffe7b1;border-radius:10px;font-weight:850;font-size:12px;}
+.board-footnote{white-space:pre-line}
+@media(max-width:370px){
+ .board-tabs{gap:3px}
+ .board-tabs button{padding:9px 2px;font-size:10px;letter-spacing:-.3px}
+ .board-tabs .board-refresh{flex-basis:31px}
+ .board-champion .board-extra{font-size:10px}
+ .board-champion{gap:5px;padding:9px 6px;grid-template-columns:29px minmax(0,1fr) auto}
+}

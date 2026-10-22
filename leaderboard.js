@@ -15,6 +15,8 @@
   const ui = {
     screen: $('leaderboardScreen'), list: $('leaderboardRows'), status: $('leaderboardStatus'),
     scopeAll: $('boardAllBtn'), scopeToday: $('boardTodayBtn'),
+    scopeChampions: $('boardChampionsBtn'), provisional: $('boardProvisional'),
+    loadMore: $('boardLoadMore'), footnote: $('boardFootnote'),
     entry: $('scoreSubmitArea'), nickname: $('leaderboardNickname'),
     submit: $('submitScoreBtn'), submitStatus: $('scoreSubmitStatus')
   };
@@ -130,6 +132,26 @@
       ui.submit.disabled = false;
     }
   }
+  const CHAMPIONS_PER_PAGE = 40;
+  let championOffset = 0;
+  let refreshSerial = 0;
+  const standardFootnote = '前 100 名單局成績 · 今日榜以台灣時間計算\n未設定雲端前不會顯示假排行榜';
+  const championsFootnote = '台灣時間每日 00:00 結算，只有最終第一名永久留名。\n歷代日冠不受隔天排行榜變動影響。';
+  function showMore(show) { ui.loadMore.classList.toggle('hidden', !show); }
+  function hideProvisional() { ui.provisional.classList.add('hidden'); ui.provisional.replaceChildren(); }
+  function appendStats(container, entry) {
+    const likes = Math.max(0, Number(entry.likes) || 0);
+    const dodged = Math.max(0, Number(entry.hidden_avoided) || 0);
+    const extra = document.createElement('span'); extra.className = 'board-extra';
+    const likeText = document.createElement('span'); likeText.className = 'board-likes';
+    likeText.textContent = `❤️ ${likes} LIKE`;
+    likeText.title = `成功 LIKE ${likes} 位正常路人`;
+    const momText = document.createElement('span'); momText.className = 'board-mom-dodged';
+    momText.textContent = `🛡️ ${dodged} MOM DODGED`;
+    momText.title = `成功避開 ${dodged} 張有媽媽的照片`;
+    extra.append(likeText, momText);
+    container.append(extra);
+  }
   function renderRows(rows) {
     ui.list.replaceChildren();
     if (!Array.isArray(rows) || !rows.length) {
@@ -141,39 +163,89 @@
       const rank = Number(entry.rank_no);
       const li = document.createElement('li');
       li.className = 'board-row' + (rank <= 3 ? ' top-three' : '');
-      const place = document.createElement('span'); place.className = 'board-rank'; place.textContent = rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : '#' + rank;
-      const name = document.createElement('span'); name.className = 'board-name'; name.textContent = String(entry.player_name || '玩家');
-      const likes = Math.max(0, Number(entry.likes) || 0);
-      const dodged = Math.max(0, Number(entry.hidden_avoided) || 0);
-      const extra = document.createElement('span'); extra.className = 'board-extra';
-      const likeText = document.createElement('span'); likeText.className = 'board-likes';
-      likeText.textContent = `❤️ ${likes} LIKE`;
-      likeText.title = `成功 LIKE ${likes} 位正常路人`;
-      const momText = document.createElement('span'); momText.className = 'board-mom-dodged';
-      momText.textContent = `🛡️ ${dodged} MOM DODGED`;
-      momText.title = `成功避開 ${dodged} 張有媽媽的照片`;
-      extra.append(likeText, momText);
-      li.append(place, name, extra);
+      const place = document.createElement('span'); place.className = 'board-rank';
+      place.textContent = rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : '#' + rank;
+      const name = document.createElement('span'); name.className = 'board-name';
+      name.textContent = String(entry.player_name || '玩家');
+      li.append(place, name);
+      appendStats(li, entry);
       ui.list.append(li);
     }
   }
-  let refreshSerial = 0;
-  async function refresh() {
+  function renderChampions(rows, append = false) {
+    if (!append) ui.list.replaceChildren();
+    for (const entry of rows) {
+      const li = document.createElement('li'); li.className = 'board-row board-champion';
+      const medal = document.createElement('span'); medal.className = 'board-rank'; medal.textContent = '🏆';
+      const info = document.createElement('span'); info.className = 'board-champion-info';
+      const date = document.createElement('span'); date.className = 'board-champion-date';
+      const rawDate = String(entry.champion_date || '');
+      date.textContent = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate.replace(/-/g, '/') : rawDate;
+      const player = document.createElement('span'); player.className = 'board-name board-champion-player';
+      player.textContent = String(entry.player_name || '玩家');
+      info.append(date, player);
+      li.append(medal, info);
+      appendStats(li, entry);
+      ui.list.append(li);
+    }
+    const count = ui.list.children.length;
+    statusText(count ? `🏅 歷代日冠 · 已載入 ${count} 天（最新日期在前）` :
+      '還沒有已結算的日冠；今天的冠軍會在明天自動留名。');
+  }
+  function renderProvisional(entry) {
+    hideProvisional();
+    if (!entry) return;
+    const label = document.createElement('span'); label.className = 'board-provisional-label';
+    label.textContent = '⏳ 今日暫定第一名 · 尚未封王';
+    const player = document.createElement('span'); player.className = 'board-provisional-player';
+    player.textContent = String(entry.player_name || '玩家');
+    const score = document.createElement('span'); score.className = 'board-provisional-score';
+    score.textContent = `❤️ ${Math.max(0, Number(entry.likes)||0)} LIKE  ·  🛡️ ${Math.max(0, Number(entry.hidden_avoided)||0)} MOM`;
+    ui.provisional.append(label, player, score);
+    ui.provisional.classList.remove('hidden');
+  }
+  async function refresh(append = false) {
     const serial = ++refreshSerial;
-    ui.list.replaceChildren();
-    statusText(configured ? '正在取得全球成績…' : noCloudMessage);
+    if (!append) {
+      ui.list.replaceChildren();
+      statusText(configured ? '正在取得排行榜成績…' : noCloudMessage);
+      showMore(false);
+      hideProvisional();
+      championOffset = 0;
+    }
     if (!configured) return;
     try {
-      const rows = await rpc('dlym_get_leaderboard', { p_scope: scope });
-      if (serial === refreshSerial) renderRows(rows);
+      if (scope === 'champions') {
+        const offset = championOffset;
+        const rows = await rpc('dlym_get_daily_champions',
+          {p_offset: offset, p_limit: CHAMPIONS_PER_PAGE});
+        if (serial !== refreshSerial) return;
+        renderChampions(Array.isArray(rows) ? rows : [], append);
+        if (Array.isArray(rows)) {
+          championOffset += rows.length;
+          showMore(rows.length === CHAMPIONS_PER_PAGE);
+        }
+        if (!append) {
+          const today = await rpc('dlym_get_leaderboard', {p_scope:'today'}).catch(() => []);
+          if (serial === refreshSerial) renderProvisional(Array.isArray(today) ? today[0] : null);
+        }
+      } else {
+        const rows = await rpc('dlym_get_leaderboard', {p_scope:scope});
+        if (serial === refreshSerial) renderRows(rows);
+      }
     } catch (e) {
-      if (serial === refreshSerial) statusText('排行榜讀取失敗：' + (e.message || '請稍後再試'));
+      if (serial === refreshSerial) {
+        statusText('排行榜讀取失敗：' + (e.message || '請稍後再試'));
+        if (append) showMore(true);
+      }
     }
   }
   function chooseScope(value) {
     scope = value;
     ui.scopeAll.setAttribute('aria-pressed', String(scope === 'all'));
     ui.scopeToday.setAttribute('aria-pressed', String(scope === 'today'));
+    ui.scopeChampions.setAttribute('aria-pressed', String(scope === 'champions'));
+    ui.footnote.textContent = scope === 'champions' ? championsFootnote : standardFootnote;
     refresh();
   }
   function open(from) {
@@ -194,7 +266,9 @@
   $('closeLeaderboard')?.addEventListener('click', close);
   ui.scopeAll.addEventListener('click', () => chooseScope('all'));
   ui.scopeToday.addEventListener('click', () => chooseScope('today'));
-  $('refreshLeaderboard')?.addEventListener('click', refresh);
+  ui.scopeChampions.addEventListener('click', () => chooseScope('champions'));
+  ui.loadMore.addEventListener('click', () => refresh(true));
+  $('refreshLeaderboard')?.addEventListener('click', () => refresh());
   ui.submit.addEventListener('click', submit);
   ui.nickname.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
   try { const name = localStorage.getItem('dlym_player_name_v050'); if (name) ui.nickname.value = name.slice(0, 16); } catch {}

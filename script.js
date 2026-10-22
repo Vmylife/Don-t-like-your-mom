@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM — v0.7.0: visible MOM roasts on mobile and live duels; submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
+/* DON'T LIKE YOUR MOM — v0.7.1: archives daily champions; visible MOM roasts on mobile and live duels; submission diagnostics & runtime version; corrected MOM dodges in leaderboard payload; no-repeat decks, MOM roasts, friend challenges. */
 (() => {
   'use strict';
 
@@ -699,13 +699,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.7.0';
+  const activeBuild = 'v0.7.1';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 99 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 99 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.7.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.7.1', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();
