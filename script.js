@@ -383,6 +383,7 @@
     if (previewImg && previewImg.parentElement === previewPhoto) previewImg.remove();
     previewImg = null;
     active = true; ended = false; locked = false; momPending = false;
+    window.DLYMMetrics?.start(liveDuelActive ? 'duel' : currentMode);
     ui.share.textContent = mode === 'challenge' && !liveDuelActive ? '👥 分享好友挑戰 ↗' : '分享戰績 ↗';
     ui.timer.classList.remove('danger');
     // Online rooms share one Supabase start timestamp; retain elapsed time if polling was late.
@@ -461,6 +462,7 @@
     if (pendingTransition) { clearTimeout(pendingTransition); pendingTransition = null; }
     const elapsed = Math.min(DURATION, performance.now() - startAt);
     const survived = !likedMom;
+    window.DLYMMetrics?.finish({survived,mode:liveDuelActive ? 'duel' : currentMode,likes:score,durationMs:elapsed});
     // End-of-round achievement accounting, independent of leaderboard uploads.
     window.DLYMAchievements?.record({likes:score,avoided,hiddenAvoided,maxCombo,skipped,survived});
     if (survived) {
@@ -737,7 +739,7 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.8.2';
+  const activeBuild = 'v0.8.4';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 107 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 107 張＋玩家投稿';

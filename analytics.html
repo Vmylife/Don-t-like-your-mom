@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#171125">
+  <title>私人營運統計｜DON'T LIKE YOUR MOM</title>
+  <link rel="stylesheet" href="./community.css?v=0.7.4">
+  <link rel="stylesheet" href="./analytics.css?v=0.8.4">
+</head>
+<body class="community-page">
+<main class="community-shell analytics-shell">
+  <nav class="analytics-nav"><a class="back-link" href="./admin.html">← 投稿審核後台</a><span class="private-pill">🔒 管理員專用</span></nav>
+  <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
+  <h1>📊 遊戲營運統計</h1>
+  <p class="lead">只提供已授權的審核管理員查看。觀察玩家從進站、開局、完賽到失敗的狀況，不公開給其他玩家。</p>
+
+  <form id="analyticsLogin" class="community-panel" autocomplete="on">
+    <h2>管理員登入</h2>
+    <label class="field-label" for="analyticsEmail">管理員 Email</label>
+    <input type="email" id="analyticsEmail" required autocomplete="username">
+    <label class="field-label" for="analyticsPassword">密碼</label>
+    <input type="password" id="analyticsPassword" required autocomplete="current-password">
+    <button type="submit" id="analyticsLoginBtn" class="pink-button">登入查看私有數據</button>
+  </form>
+
+  <div id="analyticsWorkspace" hidden>
+    <div class="analytics-controls">
+      <div class="range-options" role="group" aria-label="統計區間">
+        <button type="button" data-days="7">7 天</button>
+        <button type="button" data-days="14" class="chosen">14 天</button>
+        <button type="button" data-days="30">30 天</button>
+      </div>
+      <button id="analyticsRefresh" class="secondary-button" type="button">↻ 更新</button>
+      <button id="analyticsLogout" class="secondary-button" type="button">登出</button>
+    </div>
+    <p class="analytics-asof" id="analyticsAsOf"></p>
+    <div id="analyticsCards" class="analytics-cards" aria-label="營運指標"></div>
+
+    <section class="analytics-panel" aria-labelledby="trendHeading">
+      <h2 id="trendHeading">📈 每日玩家動向</h2>
+      <p class="chart-note">長條表示開局數，粉紅代表成功完賽，橘色代表誤滑媽媽。圖表與明細以台灣時間計算。</p>
+      <div class="analytics-legend"><span><i class="legend-start"></i>開局</span><span><i class="legend-win"></i>完賽</span><span><i class="legend-mom"></i>誤滑媽媽</span></div>
+      <div class="trend-scroll"><div id="analyticsTrend" class="trend-chart" role="img" aria-label="每日遊戲開局與結果比較圖"></div></div>
+    </section>
+
+    <section class="analytics-panel" aria-labelledby="dailyHeading">
+      <h2 id="dailyHeading">📆 每日明細</h2>
+      <div class="analytics-table-scroll">
+        <table class="analytics-table">
+          <thead><tr><th>日期</th><th>進站訪次</th><th>開局</th><th>完賽</th><th>誤滑媽</th><th>完賽率</th><th>成功送榜</th><th>最高 LIKE</th></tr></thead>
+          <tbody id="analyticsDailyRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="analytics-panel" aria-label="數據說明">
+      <h2>ℹ️ 數據說明</h2>
+      <p>開局、成功完賽、誤滑媽媽從本次統計功能啟用後才開始記錄；以前的遊玩不能回補。歷史送榜則沿用現有排行榜資料。</p>
+      <p>「進站訪次」按瀏覽器分頁工作階段估算，並不是精準的真人數；重開分頁可能重複計算。完賽率＝完賽局數 ÷ 開局數，進行中、斷線或關閉網頁的局可能導致差額。</p>
+      <p>不需玩家註冊。統計資料表不存姓名、Email、IP、定位或照片，只存隨機工作階段與遊戲事件。匿名事件仍可能受網路中斷、重複或惡意模擬影響。</p>
+    </section>
+  </div>
+  <p id="analyticsStatus" class="status-box" role="status" aria-live="polite">正在檢查管理員登入狀態…</p>
+  <p class="tiny-note">統計結果由 Supabase 管理員白名單保護，知道這個網址也無法直接讀取。請勿在 GitHub 放置 Supabase secret / service_role key。</p>
+</main>
+<script src="./leaderboard-config.js?v=0.5.0"></script>
+<script src="./community-api.js?v=0.7.3"></script>
+<script src="./analytics-ui.js?v=0.8.4"></script>
+</body>
+</html>
