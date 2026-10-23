@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171125"><meta name="robots" content="noindex,nofollow">
+  <title>投稿審核後台｜DON'T LIKE YOUR MOM</title>
+  <link rel="stylesheet" href="./community.css?v=0.7.4">
+</head>
+<body class="community-page">
+  <main class="community-shell admin-shell">
+    <a class="back-link" href="./admin.html">← 返回管理中心</a>
+    <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
+    <h1>🔒 投稿審核中心</h1>
+    <p class="lead">只有 Supabase Auth 正式帳號、且 UUID 在管理員白名單內的人才能審核。知道這個網址不代表有審核權限。</p>
+    <form id="communityAdminLogin" class="community-panel">
+      <label class="field-label" for="adminEmail">管理員 Email</label><input id="adminEmail" type="email" required autocomplete="username">
+      <label class="field-label" for="adminPassword">管理員密碼</label><input id="adminPassword" type="password" required autocomplete="current-password">
+      <button id="adminLoginButton" class="pink-button" type="submit">安全登入</button>
+    </form>
+    <div id="adminWorkspace" class="hidden">
+      <div class="admin-actions"><a class="secondary-button" href="./board-admin.html?v=0.8.8" style="text-decoration:none">💬 留言審核</a><a class="secondary-button" href="./analytics.html?v=0.8.4" style="text-decoration:none">📊 私人營運統計</a><button id="adminRefresh" type="button" class="secondary-button">↻ 重新整理投稿</button><button id="adminLogout" type="button" class="secondary-button">登出</button></div>
+      <h2>🕓 待審核</h2><div id="adminPendingList" class="review-list"></div>
+      <h2>✅ 已公開（可壓縮舊照片或下架）</h2><div id="adminApprovedList" class="review-list"></div>
+    </div>
+    <p id="adminStatus" class="status-box" role="status" aria-live="polite"></p>
+    <p class="tiny-note">管理員帳號密碼不會寫進 GitHub。禁止把 Supabase secret / service_role key 放進任何網頁或設定檔。</p>
+  </main>
+  <script src="./leaderboard-config.js?v=0.5.0"></script>
+  <script src="./community-api.js?v=0.7.3"></script>
+  <script src="./photo-compress.js?v=0.7.3"></script>
+  <script src="./community-ui.js?v=0.9.0"></script>
+</body>
+</html>

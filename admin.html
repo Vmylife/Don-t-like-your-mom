@@ -1,33 +1,132 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#171125"><meta name="robots" content="noindex,nofollow">
-  <title>投稿審核後台｜DON'T LIKE YOUR MOM</title>
-  <link rel="stylesheet" href="./community.css?v=0.7.4">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171125">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>管理中心｜DON'T LIKE YOUR MOM</title>
+<style>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",system-ui,sans-serif;background:#171125;color:#fff;--pink:#fb579a;--muted:#cbbbd6}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overscroll-behavior:none}
+body{background:radial-gradient(ellipse at 5% -20%,#57324e 0%,transparent 45%),#171125}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+[hidden]{display:none!important}
+.hub{height:100dvh;min-height:0;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.header{padding:14px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));border-bottom:1px solid #ffffff1b;flex:0 0 auto}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1160px;margin:auto}
+.brand{font-size:12px;font-weight:900;letter-spacing:1px;color:#fb8eb6;margin-bottom:3px}
+.brand-title{font-size:clamp(20px,4.5vw,29px);line-height:1.2;font-weight:900;letter-spacing:-.5px;margin:0}
+.header-actions{display:flex;align-items:center;gap:8px}
+.home-link,.logout,.refresh{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;text-decoration:none;border:1px solid #ffffff3e;color:#fff;background:#ffffff0b;border-radius:11px;font-size:13px;font-weight:800;min-height:38px;padding:8px 11px}
+.logout{border-color:#ff8fb077}
+.status{color:#c9b9d2;font-size:12px;line-height:1.45;min-height:1.2em;margin:5px 0 0}
+.status.error{color:#ff9fae}.status.success{color:#a6f2d4}
+.login-wrap{flex:1;min-height:0;overflow:auto;display:grid;place-items:center;padding:24px 16px}
+.login-card{width:min(100%,420px);background:#282039;border:1px solid #ffffff32;border-radius:20px;padding:25px;box-shadow:0 22px 70px #0004}
+.login-card h2{margin:0 0 8px;font-size:24px}.login-card p{font-size:13px;line-height:1.65;color:#cbbbd6;margin:0 0 16px}
+.field{display:block;margin:14px 0 5px;color:#fce1ee;font-size:13px;font-weight:800}
+.login-card input{width:100%;padding:13px 12px;background:#181323;color:#fff;border:1px solid #a273957e;border-radius:11px;font-size:16px;outline:none}
+.login-card input:focus{border-color:#ff8fb5;box-shadow:0 0 0 3px #f94f9728}
+.login-button{width:100%;border:0;border-radius:11px;background:linear-gradient(110deg,#ff5e9e,#ec2777);color:#fff;font-weight:900;min-height:47px;margin-top:20px}
+.note{font-size:11px!important;margin:13px 0 0!important;color:#afa0bb!important}
+.tabs{display:flex;gap:8px;padding:10px 16px;max-width:1160px;width:100%;margin:auto;flex:0 0 auto}
+.tab{min-width:0;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:12px 7px;min-height:45px;border-radius:12px;border:1px solid #ffffff2b;background:#ffffff0a;color:#d7c5df;font-size:14px;font-weight:850}
+.tab[aria-selected=true]{border-color:#ff89b6;background:#8e355f7d;color:#fff;box-shadow:inset 0 0 0 1px #ff80b624}
+.workspace{flex:1;min-height:0;display:flex;flex-direction:column}
+.frame-area{flex:1;min-height:0;position:relative;border-top:1px solid #ffffff14;background:#191326}
+.frame{display:block;position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:#cbbbd6;font-size:14px;pointer-events:none}
+@media(max-width:480px){.header{padding-top:10px;padding-bottom:8px}.brand-title{font-size:21px}.home-link,.logout,.refresh{padding:8px;font-size:12px}.tabs{gap:6px;padding:8px 9px}.tab{font-size:12px;padding:10px 3px;min-height:43px}.login-card{padding:19px}}
+</style>
 </head>
-<body class="community-page">
-  <main class="community-shell admin-shell">
-    <a class="back-link" href="./">← 返回遊戲</a>
-    <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
-    <h1>🔒 投稿審核中心</h1>
-    <p class="lead">只有 Supabase Auth 正式帳號、且 UUID 在管理員白名單內的人才能審核。知道這個網址不代表有審核權限。</p>
-    <form id="communityAdminLogin" class="community-panel">
-      <label class="field-label" for="adminEmail">管理員 Email</label><input id="adminEmail" type="email" required autocomplete="username">
-      <label class="field-label" for="adminPassword">管理員密碼</label><input id="adminPassword" type="password" required autocomplete="current-password">
-      <button id="adminLoginButton" class="pink-button" type="submit">安全登入</button>
-    </form>
-    <div id="adminWorkspace" class="hidden">
-      <div class="admin-actions"><a class="secondary-button" href="./board-admin.html?v=0.8.8" style="text-decoration:none">💬 留言審核</a><a class="secondary-button" href="./analytics.html?v=0.8.4" style="text-decoration:none">📊 私人營運統計</a><button id="adminRefresh" type="button" class="secondary-button">↻ 重新整理投稿</button><button id="adminLogout" type="button" class="secondary-button">登出</button></div>
-      <h2>🕓 待審核</h2><div id="adminPendingList" class="review-list"></div>
-      <h2>✅ 已公開（可壓縮舊照片或下架）</h2><div id="adminApprovedList" class="review-list"></div>
-    </div>
-    <p id="adminStatus" class="status-box" role="status" aria-live="polite"></p>
-    <p class="tiny-note">管理員帳號密碼不會寫進 GitHub。禁止把 Supabase secret / service_role key 放進任何網頁或設定檔。</p>
-  </main>
-  <script src="./leaderboard-config.js?v=0.5.0"></script>
-  <script src="./community-api.js?v=0.7.3"></script>
-  <script src="./photo-compress.js?v=0.7.3"></script>
-  <script src="./community-ui.js?v=0.7.4"></script>
+<body>
+<div class="hub">
+<header class="header"><div class="header-row">
+  <div><div class="brand">♥ DON'T LIKE YOUR MOM</div><h1 class="brand-title">🔒 管理中心</h1></div>
+  <div class="header-actions"><a class="home-link" href="./" title="回遊戲首頁">⌂ 首頁</a><button id="hubRefresh" type="button" class="refresh" hidden>↻ 更新</button><button id="hubLogout" type="button" class="logout" hidden>登出</button></div>
+</div><p id="hubStatus" class="status" role="status" aria-live="polite">正在檢查登入狀態…</p></header>
+<div id="hubLoginWrap" class="login-wrap" hidden>
+  <form id="hubLogin" class="login-card">
+    <h2>管理員登入</h2><p>同一組帳號，一次登入就能查看營運統計、審核投稿照片與玩家留言。</p>
+    <label class="field" for="hubEmail">管理員 Email</label><input id="hubEmail" type="email" autocomplete="username" required>
+    <label class="field" for="hubPassword">管理員密碼</label><input id="hubPassword" type="password" autocomplete="current-password" required>
+    <button id="hubLoginButton" class="login-button" type="submit">安全登入管理中心</button>
+    <p class="note">僅 Supabase 管理員白名單能登入；帳號、密碼與密鑰不會寫入 GitHub。</p>
+  </form>
+</div>
+<div id="hubWorkspace" class="workspace" hidden>
+  <div class="tabs" role="tablist" aria-label="管理功能">
+    <button class="tab" type="button" data-tab="analytics" role="tab" aria-selected="true" aria-controls="panelAnalytics">📊 營運統計</button>
+    <button class="tab" type="button" data-tab="photos" role="tab" aria-selected="false" aria-controls="panelPhotos">📸 照片審核</button>
+    <button class="tab" type="button" data-tab="messages" role="tab" aria-selected="false" aria-controls="panelMessages">💬 留言審核</button>
+  </div>
+  <div class="frame-area">
+    <section id="panelAnalytics" role="tabpanel" aria-label="營運統計" class="frame-panel" data-panel="analytics"><div class="loading">正在載入營運統計…</div></section>
+    <section id="panelPhotos" role="tabpanel" aria-label="照片審核" class="frame-panel" data-panel="photos" hidden><div class="loading">正在載入照片審核…</div></section>
+    <section id="panelMessages" role="tabpanel" aria-label="留言審核" class="frame-panel" data-panel="messages" hidden><div class="loading">正在載入留言審核…</div></section>
+  </div>
+</div>
+</div>
+<script src="./leaderboard-config.js?v=0.5.0"></script>
+<script src="./community-api.js?v=0.7.3"></script>
+<script>
+(()=>{
+'use strict';
+const API=window.DLYMCommunityAPI, $=id=>document.getElementById(id);
+const paths={analytics:'./analytics.html?v=0.9.0',photos:'./photo-admin.html?v=0.9.0',messages:'./board-admin.html?v=0.9.0'};
+const titles={analytics:'遊戲營運統計',photos:'投稿照片審核',messages:'玩家留言審核'};
+const frames=new Map();let active='analytics', logged=false,busy=false;
+const tabs=[...document.querySelectorAll('[data-tab]')];
+function message(value,type=''){const target=$('hubStatus');target.textContent=value;target.className='status '+type;}
+function show(isLogged){logged=isLogged;$('hubLoginWrap').hidden=isLogged;$('hubWorkspace').hidden=!isLogged;$('hubLogout').hidden=!isLogged;$('hubRefresh').hidden=!isLogged;}
+function selectedHash(){const name=location.hash.slice(1);return Object.hasOwn(paths,name)?name:'analytics';}
+const frameCss=`html,body{background:#191326!important;min-height:0!important} .community-shell{max-width:1100px!important;padding:10px 13px 48px!important} .community-shell>.mini-brand,.community-shell>h1,.community-shell>.lead,.community-shell>.tiny-note,.community-shell>.back-link,.analytics-nav,.board-topbar,#communityAdminLogin,#analyticsLogin,#boardAdminLogin,#adminLogout,#analyticsLogout,#boardAdminLogout,.admin-actions>a{display:none!important} .community-shell h2{margin-top:13px} .admin-actions{flex-wrap:wrap} @media(max-width:430px){.community-shell{padding:7px 10px 40px!important}}`;
+function customize(frame){
+ try{
+  const doc=frame.contentDocument;
+  if(!doc||doc.getElementById('dlym-hub-style'))return;
+  const style=doc.createElement('style');style.id='dlym-hub-style';style.textContent=frameCss;doc.head.appendChild(style);
+ }catch(err){message('已載入後台，但無法精簡內頁樣式：'+String(err.message||err));}
+}
+function createFrame(name){
+ if(frames.has(name))return frames.get(name);
+ const panel=document.querySelector(`[data-panel="${name}"]`);
+ const frame=document.createElement('iframe');frame.className='frame';frame.title=titles[name];frame.referrerPolicy='same-origin';frame.setAttribute('aria-label',titles[name]);
+ frame.addEventListener('load',()=>{customize(frame);const loading=panel.querySelector('.loading');if(loading)loading.hidden=true;});
+ panel.appendChild(frame);frames.set(name,frame);frame.src=paths[name];return frame;
+}
+async function verified(){await API.authFor('admin');if(await API.rpc('dlym_is_photo_admin',{},'admin')!==true)throw new Error('沒有管理員權限');}
+async function openTab(name,updateHash=true){
+ if(!logged)return;
+ if(!Object.hasOwn(paths,name))name='analytics';
+ try{await verified();}catch(err){API.logoutAdmin();for(const f of frames.values()){f.src='about:blank';f.remove();}frames.clear();show(false);message('登入已過期，請重新登入。','error');return;}
+ active=name;
+ tabs.forEach(t=>{const isCurrent=t.dataset.tab===name;t.setAttribute('aria-selected',String(isCurrent));t.tabIndex=isCurrent?0:-1;});
+ document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==name);
+ createFrame(name);
+ if(updateHash&&location.hash!=='#'+name)history.replaceState(null,'','#'+name);
+ message('管理員已登入 · '+titles[name],'success');
+}
+$('hubLogin').addEventListener('submit',async event=>{
+ event.preventDefault();if(busy)return;busy=true;
+ const btn=$('hubLoginButton');btn.disabled=true;
+ try{message('正在驗證管理員…');await API.adminLogin($('hubEmail').value.trim(),$('hubPassword').value);$('hubPassword').value='';show(true);await openTab(selectedHash());}
+ catch(err){show(false);message('登入失敗：'+String(err.message||err),'error');}
+ finally{busy=false;btn.disabled=false;}
+});
+$('hubLogout').addEventListener('click',()=>{API.logoutAdmin();frames.forEach(f=>{f.src='about:blank';f.remove();});frames.clear();document.querySelectorAll('.loading').forEach(el=>el.hidden=false);show(false);$('hubPassword').value='';message('已安全登出。');});
+$('hubRefresh').addEventListener('click',async()=>{if(!logged)return;try{await verified();const f=frames.get(active);if(f){const p=document.querySelector(`[data-panel="${active}"]`);p.querySelector('.loading').hidden=false;f.contentWindow.location.reload();}message('正在更新'+titles[active]+'…');}catch{API.logoutAdmin();show(false);message('登入已過期，請重新登入。','error');}});
+tabs.forEach(tab=>tab.addEventListener('click',()=>openTab(tab.dataset.tab)));
+window.addEventListener('hashchange',()=>{if(logged)openTab(selectedHash(),false);});
+(async()=>{
+ if(!API?.configured){show(false);message('Supabase 尚未設定，請檢查 leaderboard-config.js。','error');return;}
+ try{await verified();show(true);await openTab(selectedHash(),false);}catch{show(false);message('請輸入原本的管理員 Email 與密碼。');}
+})();
+})();
+</script>
 </body>
 </html>

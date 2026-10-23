@@ -1,4 +1,4 @@
-/* DON'T LIKE YOUR MOM v0.7.0 submission and administrator UI. */
+/* DON'T LIKE YOUR MOM v0.9.0 submission and administrator UI — same-session restore for unified admin. */
 (() => {
  'use strict';
  const $=id=>document.getElementById(id);
@@ -183,4 +183,18 @@
  });
  $('adminRefresh').addEventListener('click',()=>listPhotos().catch(err=>status(out,'重新整理失敗：'+err.message)));
  $('adminLogout').addEventListener('click',()=>{API.logoutAdmin();workspace.classList.add('hidden');loginForm.classList.remove('hidden');status(out,'已登出。');});
+ // v0.9.0: share the verified session created by the unified management hub.
+ // No stored or copied password is needed, and a direct visit to this page still works.
+ (async()=>{
+   if(!API?.configured)return;
+   try{
+     await API.authFor('admin');
+     if(await API.rpc('dlym_is_photo_admin',{},'admin')!==true)return;
+     loginForm.classList.add('hidden');workspace.classList.remove('hidden');
+     await listPhotos();
+   }catch(err){
+     loginForm.classList.remove('hidden');workspace.classList.add('hidden');
+     if(/expired|invalid|401|403|unauthorized/i.test(String(err?.message||err)))status(out,'請重新登入管理員帳號。');
+   }
+ })();
 })();
