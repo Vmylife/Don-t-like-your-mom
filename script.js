@@ -114,10 +114,12 @@
     const pct = n => Math.max(0,Math.min(100,Number(n)||0));
     const ringPct = Number(evidenceTarget.ring) || Math.min(90,(Number(evidenceTarget.size)||16)*3);
     const diameter = Math.min(w*.86,Math.max(32,w*ringPct/100));
-    // Shift rings inward at edges without losing the person inside the circle.
-    const clamp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
-    const cx = clamp(w*pct(evidenceTarget.x)/100,diameter/2,w-diameter/2);
-    const cy = clamp(h*pct(evidenceTarget.y)/100,diameter/2,h-diameter/2);
+    // Keep the circle centered on the actual hidden MOM, even at the photo edge.
+    // A portion of the ring may extend beyond the photo; CSS allows overflow.
+    // Never clamp to half a diameter inside the photo: it moves the marker AWAY
+    // from tiny reflections, phone wallpapers, and faces next to an image edge.
+    const cx = w*pct(evidenceTarget.x)/100;
+    const cy = h*pct(evidenceTarget.y)/100;
     Object.assign(ui.evidenceSpot.style,{
       left:(lx+cx)+'px',top:(ty+cy)+'px',width:diameter+'px',height:diameter+'px'
     });
@@ -542,13 +544,15 @@
       }
       // v0.8.1: image-true hit region (not the cropped/letterboxed evidence frame).
       // Keep the old large ring convention, while allowing per-photo tuned sizes.
-      evidenceTarget = culprit.spot || null;
+      // The entire card is MOM in direct portraits: do not draw a circle.
+      // Only background/hidden MOM traps need a location hint.
+      evidenceTarget = culprit.trapType === 'background' ? (culprit.spot || null) : null;
       ui.evidenceSpot.className = 'evidence-spot hidden';
       ui.evidenceSpot.style.width = '';
       ui.evidenceSpot.style.height = '';
       if (evidenceTarget) {
         ui.evidenceSpot.classList.remove('hidden');
-        ui.evidenceSpot.classList.add(culprit.trapType === 'direct' ? 'spot-direct' : 'spot-small');
+        ui.evidenceSpot.classList.add('spot-small');
       }
     }
     showScreen('result');
@@ -733,13 +737,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.8.1';
+  const activeBuild = 'v0.8.2';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 107 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 107 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.8.1', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.8.2', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();

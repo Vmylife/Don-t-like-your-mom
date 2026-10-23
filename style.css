@@ -485,3 +485,9 @@
 .ach-back{margin:0;flex:none;}
 @media(max-width:840px){.screen-achievements{padding:10px 13px max(10px,env(safe-area-inset-bottom));gap:7px;overflow:hidden;}.screen-achievements h2{font-size:23px;}.ach-intro{font-size:11px;}.ach-item{min-height:67px;padding:8px;}.ach-back{min-height:39px;}}
 @media(max-width:840px) and (max-height:735px){.ach-local-note{font-size:9px;}.screen-achievements h2{font-size:20px;}.ach-filters button{padding:6px 9px;}.ach-next{padding:6px 8px;}}
+
+/* v0.8.2 — Edge MOM clues: ring can extend beyond the photo, never clipped.
+   The image keeps its rounded corners; only the translucent clue ring escapes. */
+.evidence-panel, .evidence-photo { overflow:visible !important; }
+.evidence-photo > img { border-radius:8px; }
+.evidence-spot { z-index:4; overflow:visible; }
