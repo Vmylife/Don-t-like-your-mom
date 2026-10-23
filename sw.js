@@ -1,5 +1,5 @@
 /* Offline-ready v0.7.3: progressive 18-photo warmup / 500KB community photos; 107 photos total. */
-const VERSION = 'dlym-v0.8.2-edge-rings-no-direct-20261023';
+const VERSION = 'dlym-v0.8.3-six-uploads-20261023';
 const PHOTO_CACHE = 'dlym-photo-v061';
 const SHELL = ["./","./index.html","./style.css","./script.js","./deck-engine.js","./photo-preload.js","./community-api.js","./community-feed.js","./community-ui.js","./photo-compress.js","./community.css","./submit.html","./admin.html","./live-duel.js","./art-data.js","./leaderboard-config.js","./leaderboard.js","./achievements.js","./feedback.js","./manifest.webmanifest","./assets/icon-192-mom-v1.png","./assets/icon-512-mom-v1.png","./assets/apple-touch-icon-mom-v1.png"];
 self.addEventListener('install', event => {
