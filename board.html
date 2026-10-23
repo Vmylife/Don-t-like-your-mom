@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#21172f">
+  <title>玩家留言板｜DON'T LIKE YOUR MOM</title>
+  <meta name="description" content="DON'T LIKE YOUR MOM 玩家留言板：聊天、分享心得、提出遊戲建議及回報問題。">
+  <link rel="stylesheet" href="./community.css?v=0.7.4">
+  <link rel="stylesheet" href="./board.css?v=0.8.8">
+</head>
+<body class="community-page message-board-page">
+  <main class="community-shell board-shell">
+    <nav class="board-topbar"><a class="back-link" href="./">← 返回遊戲</a><a class="board-top-admin" href="./board-admin.html">站長管理</a></nav>
+    <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
+    <h1>💬 媽媽的留言板</h1>
+    <p class="lead">聊聊你的慘死經驗、吐槽媽媽，或告訴站長想改善的地方。留言<strong>經站長審核後公開</strong>。</p>
+
+    <form id="boardForm" class="community-panel board-compose">
+      <div class="board-panel-title">✍️ 留一句話給大家</div>
+      <label class="field-label" for="boardNickname">暱稱 <small>2～18 字</small></label>
+      <input id="boardNickname" type="text" placeholder="例如：又被我媽抓到了" minlength="2" maxlength="18" required autocomplete="nickname" />
+      <label class="field-label" for="boardCategory">留言分類</label>
+      <select id="boardCategory" required>
+        <option value="chat">💬 閒聊交流</option>
+        <option value="suggestion">💡 遊戲建議</option>
+        <option value="bug">🐛 問題回報</option>
+      </select>
+      <label class="field-label" for="boardContent">內容 <small>6～400 字</small></label>
+      <textarea id="boardContent" rows="4" minlength="6" maxlength="400" required placeholder="最想對媽媽說什麼？或是你希望遊戲增加什麼玩法？"></textarea>
+      <div class="board-compose-footer"><span id="boardChars">0 / 400</span><span>不支援圖片或 HTML</span></div>
+      <button id="boardSubmit" class="pink-button" type="submit">送出留言，等待審核 →</button>
+      <p id="boardPostStatus" class="status-box" role="status" aria-live="polite"></p>
+      <p class="board-guideline">為維持遊戲氣氛，請勿發布個資、威脅、歧視、騷擾、違法內容或廣告；站長有權拒絕或下架。每位匿名身份 24 小時最多發文 6 次，兩篇間隔 90 秒。</p>
+    </form>
+
+    <section class="board-public" aria-label="已公開的留言">
+      <div class="board-section-head"><h2>📣 大家在聊什麼</h2><button type="button" class="board-reload" id="boardReload">↻ 更新</button></div>
+      <div class="board-filters" role="group" aria-label="依類別篩選留言">
+        <button data-kind="all" type="button" class="selected" aria-pressed="true">全部</button>
+        <button data-kind="chat" type="button" aria-pressed="false">💬 閒聊</button>
+        <button data-kind="suggestion" type="button" aria-pressed="false">💡 建議</button>
+        <button data-kind="bug" type="button" aria-pressed="false">🐛 問題</button>
+      </div>
+      <p id="boardReadStatus" class="status-box" role="status" aria-live="polite">正在載入留言…</p>
+      <div id="boardPosts" class="board-post-list"></div>
+      <button id="boardLoadMore" type="button" class="secondary-button board-more hidden">載入更多留言 ↓</button>
+    </section>
+    <p class="tiny-note">玩家以匿名身份留言。公開內容不代表站長立場；你可以檢舉不當留言。留言板不會要求玩家輸入 Email 或密碼。</p>
+  </main>
+  <script src="./leaderboard-config.js?v=0.5.0"></script>
+  <script src="./community-api.js?v=0.7.3"></script>
+  <script src="./board.js?v=0.8.8"></script>
+</body>
+</html>

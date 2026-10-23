@@ -1,0 +1,58 @@
+/* DON'T LIKE YOUR MOM - v0.8.8 message board */
+.message-board-page{color:#f9edf5;-webkit-text-size-adjust:100%}
+.board-shell{max-width:740px;padding-top:16px}
+.board-topbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.board-top-admin{font-size:12px;text-decoration:none;color:#b4a1c2;padding:6px 0}
+.board-panel-title{color:#fff;font-weight:900;font-size:17px}
+.board-shell .lead{max-width:640px}
+.board-shell .lead strong{color:#ffd0e1}
+.board-compose{padding:18px}
+.board-compose .field-label{margin-top:14px}
+.board-compose .field-label small{font-weight:500;color:#b6a4c5}
+.board-compose textarea{min-height:122px;line-height:1.55;resize:vertical;white-space:pre-wrap}
+.board-compose select{width:100%;display:block;appearance:auto;min-height:46px;border-radius:12px;padding:11px 12px;font:inherit;font-size:16px;color:white;background:#191327;border:1px solid #90618380;outline:none}
+.board-compose select:focus{outline:2px solid #ff86b629;border-color:#ff86b6}
+.board-compose-footer{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#b3a5c0;margin:8px 0 14px}
+.board-compose .status-box{min-height:0;margin:10px 0 0}
+.board-guideline{font-size:11px;line-height:1.65;color:#aea0bb;margin:10px 0 0}
+.board-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
+.board-section-head h2{margin:14px 0;font-size:21px}
+.board-reload{background:#ffffff13;border:1px solid #ffffff32;color:#ffe5f1;border-radius:9px;padding:8px 12px;font-size:13px;font-weight:800}
+.board-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 9px}
+.board-filters button{min-width:0;background:#ffffff0b;border:1px solid #ffffff35;border-radius:11px;color:#c8bacf;font-size:12px;font-weight:750;padding:11px 3px;white-space:nowrap}
+.board-filters button.selected{background:#a83c7480;border-color:#ff96bc;color:#fff}
+.board-post-list{display:grid;gap:12px}
+.board-post{background:#282038;border:1px solid #ffffff27;border-radius:16px;padding:14px 15px;overflow-wrap:anywhere}
+.board-post.is-pinned{border-color:#ffca7680;background:#3b2b3f}
+.board-post-head{display:flex;justify-content:space-between;align-items:start;gap:8px}
+.board-author{font-size:15px;font-weight:900;color:#fff}
+.board-post-date{font-size:11px;color:#bbaec9;white-space:nowrap;padding-top:3px}
+.board-post-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.board-tag{border-radius:7px;background:#ffffff13;border:1px solid #ffffff28;color:#e3d1e3;font-weight:750;font-size:11px;padding:3px 7px}
+.board-tag.pin{color:#ffdb9c;background:#8e692e36;border-color:#ffcc8060}
+.board-post-content{white-space:pre-wrap;line-height:1.65;color:#f7eaf5;font-size:14px;margin:12px 0;overflow-wrap:anywhere}
+.board-post-actions{display:flex;justify-content:flex-end}
+.board-report{padding:6px 8px;border:0;background:transparent;color:#9f91ae;font-size:12px}
+.board-report:focus-visible{outline:2px solid #ff9fc0}
+.board-more{display:block;margin:13px auto;min-height:45px;width:100%}
+.board-placeholder{text-align:center;font-size:13px;color:#b7a8c5;border:1px dashed #ffffff35;border-radius:13px;padding:25px 12px;line-height:1.65}
+.board-public .status-box{margin:6px 0 11px;color:#afdcca}
+.board-admin-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:13px 0}
+.board-admin-tabs button{min-width:0;background:#ffffff0f;color:#d2c3d9;border:1px solid #ffffff3a;padding:11px 4px;border-radius:10px;font-weight:850;font-size:12px}
+.board-admin-tabs button.selected{background:#7e3a69;border-color:#ff85b2;color:white}
+.board-admin-cards{display:grid;gap:12px}
+.board-admin-card{border:1px solid #ffffff30;border-radius:13px;padding:14px;background:#2d223d;overflow-wrap:anywhere}
+.board-admin-meta{font-size:12px;color:#c9b7d1;margin:8px 0}
+.board-admin-meta strong{color:#ffe8f3}
+.board-admin-body{white-space:pre-wrap;font-size:14px;line-height:1.65;margin:9px 0}
+.board-admin-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.board-admin-buttons button{border:1px solid #ffffff4a;background:#ffffff13;color:white;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:800}
+.board-admin-buttons .approve{background:#246f5470;border-color:#71e8bf}
+.board-admin-buttons .danger{background:#973a5470;border-color:#ff8ba6}
+@media(max-width:440px){
+ .board-shell{padding-left:13px;padding-right:13px}
+ .board-compose{padding:15px}
+ .board-post{padding:13px}
+ .board-filters{gap:4px}
+ .board-filters button{font-size:11px;padding:9px 1px}
+}

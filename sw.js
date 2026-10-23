@@ -1,7 +1,7 @@
 /* Offline-ready v0.7.3: progressive 18-photo warmup / 500KB community photos; 205 photos total. */
-const VERSION = 'dlym-v0.8.7-add-12-direct-moms-20261023';
+const VERSION = 'dlym-v0.8.8-message-board-20261023';
 const PHOTO_CACHE = 'dlym-photo-v061';
-const SHELL = ["./","./index.html","./style.css","./script.js","./deck-engine.js","./photo-preload.js","./community-api.js","./community-feed.js","./community-ui.js","./photo-compress.js","./community.css","./submit.html","./admin.html","./live-duel.js","./art-data.js","./leaderboard-config.js","./leaderboard.js","./achievements.js","./feedback.js","./game-metrics.js","./analytics.html","./analytics.css","./analytics-ui.js","./manifest.webmanifest","./assets/icon-192-mom-v1.png","./assets/icon-512-mom-v1.png","./assets/apple-touch-icon-mom-v1.png"];
+const SHELL = ["./","./index.html","./style.css","./script.js","./deck-engine.js","./photo-preload.js","./community-api.js","./community-feed.js","./community-ui.js","./photo-compress.js","./community.css","./submit.html","./admin.html","./live-duel.js","./art-data.js","./leaderboard-config.js","./leaderboard.js","./achievements.js","./feedback.js","./game-metrics.js","./analytics.html","./analytics.css","./analytics-ui.js","./board.html","./board.css","./board.js","./board-admin.html","./board-admin.js","./manifest.webmanifest","./assets/icon-192-mom-v1.png","./assets/icon-512-mom-v1.png","./assets/apple-touch-icon-mom-v1.png"];
 self.addEventListener('install', event => {
  event.waitUntil(caches.open(VERSION).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

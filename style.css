@@ -491,3 +491,15 @@
 .evidence-panel, .evidence-photo { overflow:visible !important; }
 .evidence-photo > img { border-radius:8px; }
 .evidence-spot { z-index:4; overflow:visible; }
+
+/* v0.8.8 - fifth welcome action, same height as the other buttons. */
+.welcome-extra-actions .board-home-link{
+  display:grid;place-items:center;min-width:0;min-height:40px;
+  text-align:center;text-decoration:none;line-height:1.25;
+  font-size:clamp(10px,2.85vw,13px);font-weight:900;
+  padding:10px 3px;margin:9px 0 0;
+  color:#f7d7e9;background:#ffffff0d;
+  border:1px solid #d1a0fa80;border-radius:13px;
+}
+@media(max-width:840px){.welcome-extra-actions .board-home-link{padding:8px 3px;min-height:39px;margin-top:7px}}
+@media(max-width:355px){.welcome-extra-actions .board-home-link{font-size:10px;padding:6px 2px}}

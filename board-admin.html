@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#21172f">
+  <meta name="robots" content="noindex,nofollow">
+  <title>留言審核後台｜DON'T LIKE YOUR MOM</title>
+  <link rel="stylesheet" href="./community.css?v=0.7.4">
+  <link rel="stylesheet" href="./board.css?v=0.8.8">
+</head>
+<body class="community-page message-board-page">
+ <main class="community-shell admin-shell board-shell">
+  <div class="board-topbar"><a class="back-link" href="./board.html">← 返回留言板</a><a class="board-top-admin" href="./admin.html">照片審核</a></div>
+  <div class="mini-brand">♥ DON'T LIKE YOUR MOM</div>
+  <h1>🔒 玩家留言審核</h1>
+  <p class="lead">使用原本照片投稿審核的管理員帳號。玩家看不到這裡的待審與檢舉資料。</p>
+  <form id="boardAdminLogin" class="community-panel">
+   <label for="boardAdminEmail" class="field-label">管理員 Email</label>
+   <input id="boardAdminEmail" type="email" required autocomplete="username">
+   <label for="boardAdminPassword" class="field-label">密碼</label>
+   <input id="boardAdminPassword" type="password" required autocomplete="current-password">
+   <button id="boardAdminLoginBtn" class="pink-button" type="submit">管理員登入</button>
+  </form>
+  <section id="boardAdminWorkspace" hidden>
+   <div class="admin-actions"><button id="boardAdminRefresh" class="secondary-button" type="button">↻ 更新留言</button><button id="boardAdminLogout" class="secondary-button" type="button">登出</button></div>
+   <div class="board-admin-tabs" role="group" aria-label="審核清單">
+    <button data-state="pending" class="selected" type="button">⏳ 待審核</button>
+    <button data-state="reported" type="button">🚩 檢舉</button>
+    <button data-state="approved" type="button">✅ 已公開</button>
+    <button data-state="removed" type="button">🗑 已下架</button>
+   </div>
+   <p id="boardAdminListStatus" class="status-box" aria-live="polite"></p>
+   <div id="boardAdminCards" class="board-admin-cards"></div>
+  </section>
+  <p id="boardAdminStatus" class="status-box" role="status" aria-live="polite"></p>
+  <p class="tiny-note">審核、檢舉及下架由 Supabase 管理員白名單檢查；GitHub Pages 裡不會存放管理員密碼或 secret key。</p>
+ </main>
+ <script src="./leaderboard-config.js?v=0.5.0"></script>
+ <script src="./community-api.js?v=0.7.3"></script>
+ <script src="./board-admin.js?v=0.8.8"></script>
+</body>
+</html>
