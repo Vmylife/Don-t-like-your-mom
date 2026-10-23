@@ -61,7 +61,7 @@
   <link rel="manifest" href="./manifest.webmanifest?v=mom-icon-v1">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192-mom-v1.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon-mom-v1.png">
-  <link rel="stylesheet" href="./style.css?v=0.8.8">
+  <link rel="stylesheet" href="./style.css?v=0.9.0">
   <title>DON'T LIKE YOUR MOM — 45 秒滑卡生存挑戰</title>
 </head>
 <body>
@@ -110,8 +110,10 @@
           <button id="openSubmitPhotos" class="community-submit-button" type="button">📸 我要投稿</button>
           <button id="openAchievementsWelcome" class="achievement-link" type="button">🏅 成就圖鑑</button>
           <a class="board-home-link" href="./board.html">💬 玩家留言板</a>
+          <button id="openChangelog" class="welcome-changelog-button" type="button" aria-haspopup="dialog" aria-controls="changelogDialog">📝 更新日誌</button>
         </div>
         <div id="challengeInviteInfo" class="challenge-invite-info hidden" aria-live="polite"></div><div class="welcome-bottom">看到媽媽一定要左滑！<strong>右滑媽媽就 GAME OVER</strong></div>
+
       </section>
 
       <section id="duelLobbyScreen" class="screen screen-duel-lobby hidden" aria-label="雙人同步挑戰等候室">
@@ -233,9 +235,24 @@
         <p id="boardFootnote" class="board-footnote">前 100 名單局成績 · 今日榜以台灣時間計算<br>未設定雲端前不會顯示假排行榜</p>
         <button id="closeLeaderboard" class="secondary-button board-back" type="button">← 返回遊戲</button>
       </section>
-      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.8.8 · 205 張內建照片</span></footer>
+      <footer class="app-footer"><span>MADE FOR CHAOTIC SWIPERS</span><span>v0.9.0 · 205 張內建照片</span></footer>
     </main>
   </div>
+
+  <!-- Independent modal: the game remains on the welcome screen when viewing patch notes. -->
+  <dialog id="changelogDialog" class="changelog-dialog" aria-labelledby="changelogTitle" aria-describedby="changelogDescription">
+    <div class="changelog-modal-head">
+      <div>
+        <div class="changelog-eyebrow">DON'T LIKE YOUR MOM · PATCH NOTES</div>
+        <h2 id="changelogTitle">📋 更新日誌</h2>
+        <p id="changelogDescription">版本更新內容 · 日期以台灣時間顯示</p>
+      </div>
+      <button id="closeChangelog" type="button" class="changelog-close" aria-label="關閉更新日誌">✕</button>
+    </div>
+    <div id="changelogEntries" class="changelog-entries" aria-live="off"></div>
+    <div class="changelog-modal-foot">更多新版本會陸續記錄在這裡。</div>
+  </dialog>
+
   <script src="./leaderboard-config.js?v=0.5.0"></script>
   <script src="./feedback.js?v=0.5.0"></script>
   <script src="./leaderboard.js?v=0.7.4"></script>
@@ -247,6 +264,7 @@
   <script src="./live-duel.js?v=0.6.1"></script>
   <script src="./achievements.js?v=0.8.0"></script>
   <script src="./game-metrics.js?v=0.8.4"></script>
-  <script src="./script.js?v=0.8.8"></script>
+  <script src="./script.js?v=0.9.0"></script>
+  <script src="./changelog.js?v=0.9.0"></script>
 </body>
 </html>

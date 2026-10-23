@@ -503,3 +503,73 @@
 }
 @media(max-width:840px){.welcome-extra-actions .board-home-link{padding:8px 3px;min-height:39px;margin-top:7px}}
 @media(max-width:355px){.welcome-extra-actions .board-home-link{font-size:10px;padding:6px 2px}}
+
+
+/* v0.9.0 — Patch notes are the 6th homepage action:
+   directly underneath the 3rd action (我要投稿), not a floating overlay. */
+.welcome-extra-actions .welcome-changelog-button{
+  display:grid;place-items:center;
+  position:static;grid-column:3;grid-row:2;
+  width:100%;min-width:0;min-height:40px;
+  margin:9px 0 0;padding:10px 3px;
+  background:#ffffff0d;border:1px solid #d1a0fa80;
+  color:#f7d7e9;border-radius:13px;
+  font-family:inherit;font-size:clamp(10px,2.85vw,13px);font-weight:900;line-height:1.25;
+  text-align:center;white-space:normal;
+  -webkit-tap-highlight-color:transparent;
+}
+.welcome-extra-actions .welcome-changelog-button:focus-visible{outline:2px solid #ff9bc4;outline-offset:3px}
+.welcome-extra-actions .welcome-changelog-button:active{transform:scale(.97)}
+@media(max-width:840px){
+  .welcome-extra-actions .welcome-changelog-button{padding:8px 3px;min-height:39px;margin-top:7px}
+}
+@media(max-width:355px){
+  .welcome-extra-actions .welcome-changelog-button{font-size:10px;padding:6px 2px}
+}
+.changelog-dialog{
+  width:min(440px,calc(100vw - 32px));max-width:440px;
+  max-height:min(82dvh,720px);padding:0;border:1px solid #ff91c77d;
+  border-radius:20px;background:#231a33;color:#fff;
+  box-shadow:0 24px 90px #05020bdb;
+  overflow:hidden;overscroll-behavior:contain;
+}
+.changelog-dialog::backdrop{background:#0e0719ca;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.changelog-modal-head{
+  position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:9px;
+  background:linear-gradient(135deg,#48233e,#2b2140);padding:22px 18px 16px;
+  border-bottom:1px solid #ff9dc33d;
+}
+.changelog-eyebrow{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#fa9fbd;margin-bottom:5px}
+.changelog-modal-head h2{font-size:24px;line-height:1.25;margin:0;color:#ffe2ef;font-weight:950}
+.changelog-modal-head p{margin:8px 0 0;color:#c8b7d2;font-size:11px;line-height:1.5}
+.changelog-close{
+  flex:0 0 38px;width:38px;height:38px;padding:0;
+  border:1px solid #ffffff45;border-radius:12px;background:#ffffff16;
+  font-family:inherit;font-size:17px;font-weight:900;line-height:1;color:#fff;cursor:pointer;
+}
+.changelog-entries{
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  max-height:min(59dvh,520px);padding:16px 17px 8px;
+}
+.changelog-release{
+  position:relative;margin:0 0 15px;padding:14px 14px 12px;
+  border-radius:14px;background:#ffffff08;border:1px solid #ffffff20;
+  text-align:left;
+}
+.changelog-release.latest{border-color:#ff78ac8e;background:linear-gradient(135deg,#772b5b46,#33213fbd)}
+.changelog-release-head{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}
+.changelog-version{font-size:13px;font-weight:950;color:#ffc3db}
+.changelog-release.latest .changelog-version{color:#ff81b4}
+.changelog-date{font-size:11px;color:#bfaecb;letter-spacing:.2px}
+.changelog-new{font-size:9px;font-weight:900;border:1px solid #ff8eaf7a;border-radius:7px;color:#ffe2f0;padding:2px 6px;background:#de46803a}
+.changelog-release h3{font-size:14px;color:#fbe6f3;margin:0 0 7px;line-height:1.3;font-weight:900}
+.changelog-release ul{list-style:disc;margin:0;padding-left:19px;color:#d8c9dc;font-size:12px;line-height:1.7}
+.changelog-release li+li{margin-top:3px}
+.changelog-modal-foot{border-top:1px solid #ffffff1c;text-align:center;padding:11px 14px;color:#bfaac7;font-size:11px}
+@media(max-height:680px){
+  .changelog-dialog{max-height:88dvh}
+  .changelog-modal-head{padding:15px 16px 11px}
+  .changelog-entries{max-height:58dvh}
+  .changelog-modal-head h2{font-size:20px}
+}

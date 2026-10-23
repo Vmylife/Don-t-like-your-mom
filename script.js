@@ -739,13 +739,13 @@
   refreshInvite();
   if (window.DLYMDuel?.incoming) window.DLYMDuel.open(true);
   // The badge is set from the JS that actually executed, not merely HTML.
-  const activeBuild = 'v0.8.8';
+  const activeBuild = 'v0.9.0';
   document.querySelector('.app-footer span:last-child').textContent = activeBuild + ' · 205 張內建照片';
   const badge = document.getElementById('gameVersionBadge');
   if (badge) badge.textContent = activeBuild + ' · 205 張＋玩家投稿';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js?v=0.8.8', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
+      navigator.serviceWorker.register('./sw.js?v=0.9.0', {updateViaCache:'none'}).then(reg => reg.update()).catch(() => {});
     });
   }
 })();
