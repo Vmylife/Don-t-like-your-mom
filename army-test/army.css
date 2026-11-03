@@ -21,7 +21,8 @@
 #resultScreen .evidence-heading{color:#e3bdce}
 #recordMessage{font-size:11px}
 @media(min-width:841px){
- .app{min-height:730px;max-height:min(94dvh,890px);overflow:hidden}
+ /* Never exceed the desktop viewport, even on a short browser window. */
+ .app{height:min(840px,calc(100dvh - 72px));min-height:0;max-height:calc(100dvh - 72px);overflow:hidden}
  .screen-welcome{padding:26px}
  .screen-game{display:flex;flex-direction:column;justify-content:space-evenly;flex:1;min-height:0}
  .screen-result{overflow-y:auto}
