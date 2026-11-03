@@ -215,3 +215,40 @@
 .armyDetailPanel h3{font-size:21px;margin:0}
 .armyDetailPanel p{width:100%;line-height:1.5;text-align:left;font-size:13px;border-radius:9px;background:#183527;margin:0;padding:12px}
 #armyDetailState{color:#f4dca6;font-size:12px}
+
+/* v4 — fourth official ARMY3 minigame: fixed quick exit, including all result pages. */
+#armyCampExit{
+ position:fixed!important;z-index:520!important;
+ left:calc(10px + env(safe-area-inset-left))!important;
+ top:calc(10px + env(safe-area-inset-top))!important;
+ right:auto!important;bottom:auto!important;
+ min-width:91px;min-height:42px;display:inline-flex;align-items:center;justify-content:center;
+ box-sizing:border-box;padding:9px 12px;
+ border:1px solid #eedaa5c7;border-radius:12px;
+ background:rgba(22,48,36,.95);color:#f6e6bc;
+ font:850 14px/1.15 system-ui,-apple-system,"Noto Sans TC",sans-serif;
+ box-shadow:0 5px 17px #06160d73;
+ touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none;
+}
+#armyCampExit:active{transform:scale(.97);background:#365540}
+#armyCampExit:focus-visible{outline:2px solid #ffe3a0;outline-offset:3px}
+#armyCampExit:disabled{opacity:.65;cursor:default}
+@media(min-width:841px){
+ #armyCampExit{left:max(12px,calc(50vw - 222px))!important;top:max(12px,calc((100dvh - min(840px,100dvh - 72px))/2 + 10px))!important}
+}
+@media(max-width:840px){
+ #gameScreen .hud-top{margin-top:calc(46px + env(safe-area-inset-top));}
+ #resultScreen{padding-top:calc(54px + env(safe-area-inset-top))!important;}
+ #armyReportScreen .armyReportKicker{padding-left:100px;min-height:27px;}
+ #armyReportScreen .armyReportKicker small{display:none;}
+}
+@media(min-width:841px){
+ #gameScreen .hud-top{margin-top:43px;}
+ #resultScreen{padding-top:54px!important}
+ #armyReportScreen .armyReportKicker{padding-left:100px;min-height:25px}
+}
+@media(max-height:560px){
+ #gameScreen .hud-top{margin-top:38px}
+ #resultScreen{padding-top:49px!important}
+ #armyReportScreen .armyReportKicker{min-height:17px}
+}
