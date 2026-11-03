@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#121024">
+  <meta name="description" content="國軍交友鑑測：45 秒內別滑到班長的媽媽！">
+  <title>別滑到班長的媽媽｜國軍交友鑑測</title>
+  <link rel="stylesheet" href="../style.css?v=0.9.0">
+  <link rel="stylesheet" href="./army.css?v=1">
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+  <div class="desktop-layout">
+    <main class="app" aria-label="別滑到班長的媽媽">
+      <section id="welcomeScreen" class="screen screen-welcome" aria-labelledby="welcomeTitle">
+        <div class="welcome-art" aria-hidden="true">
+          <div class="welcome-decoration deco-one"></div>
+          <div class="welcome-decoration deco-two"></div>
+          <div class="welcome-portrait"><img src="../assets/profiles/mom_01.webp" alt=""></div>
+          <span class="welcome-sticker sticker-no">NOPE ✕</span>
+          <span class="welcome-sticker sticker-love">LIKE ♥</span>
+          <div class="welcome-bubble">HI, SWEETIE! 👋</div>
+        </div>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">別滑到<br><em>班長的媽媽。</em></h1>
+          <p>45 秒內盡量右滑一般交友對象！<br>看到班長的媽媽一定要左滑，右滑她就直接出事。</p>
+        </div>
+        <div class="rules-line">
+          <span><b>←</b> 左滑避開媽媽</span>
+          <span><b>→</b> 右滑路人 +1</span>
+        </div>
+        <button id="startButton" class="primary-button" type="button">開始滑卡 <span aria-hidden="true">➜</span></button>
+        <p id="loadingStatus" class="army-loading-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="gameScreen" class="screen screen-game hidden" aria-label="交友鑑測進行中">
+        <div class="hud-top">
+          <div class="hud-timer"><span class="tiny-label">TIME LEFT</span><div class="timer-value"><span id="timerValue">45.0</span><small>S</small></div></div>
+          <div class="hud-score"><span class="tiny-label">LIKES</span><div class="score-value"><span id="scoreValue">0</span><span class="heart-small">♥</span></div></div>
+          <div class="hud-best"><span class="tiny-label">BEST</span><div id="bestValue" class="best-value">0</div></div>
+        </div>
+        <div class="timer-track"><div id="timerFill" class="timer-fill"></div></div>
+        <div class="stage-line"><div><span id="stagePill" class="stage-pill">LEVEL 1</span><strong id="stageName">先認清班長的媽媽</strong></div><span id="comboChip" class="combo-chip" aria-live="polite"></span></div>
+        <div id="cardArea" class="card-area" aria-label="交友照片卡片">
+          <div class="stack-card stack-back" aria-hidden="true"></div>
+          <div class="stack-card stack-mid" aria-hidden="true"></div>
+          <article id="swipeCard" class="swipe-card" aria-label="當前交友卡片">
+            <div class="profile-photo">
+              <img id="profileImage" src="../assets/profiles/normal_01.webp" alt="交友照片">
+              <span id="likeStamp" class="swipe-stamp like-stamp" aria-hidden="true">LIKE ♥</span>
+              <span id="nopeStamp" class="swipe-stamp nope-stamp" aria-hidden="true">NOPE ✕</span>
+              <div class="photo-gradient" aria-hidden="true"></div>
+              <div class="profile-photo-label">✦ DISCOVER</div>
+            </div>
+            <div class="profile-details">
+              <div class="identity-line"><h3 id="profileName">準備中 <span>26</span></h3><span class="verified" title="虛構人物資料">✦</span></div>
+              <p id="profileBio">正在載入交友資料…</p>
+              <div class="distance-row">⌖ <span id="profileCity">台灣</span> <span class="dot-separator">·</span> 正在尋找緣分</div>
+            </div>
+          </article>
+        </div>
+        <div class="actions">
+          <button id="nopeButton" class="swipe-action nope-action" type="button" aria-label="左滑：不喜歡"><span>✕</span><small>NOPE</small></button>
+          <div class="action-instruction">左右滑動卡片<br>或點擊按鈕</div>
+          <button id="likeButton" class="swipe-action like-action" type="button" aria-label="右滑：喜歡"><span>♥</span><small>LIKE</small></button>
+        </div>
+      </section>
+
+      <section id="resultScreen" class="screen screen-result hidden" aria-labelledby="resultTitle">
+        <div id="resultEmoji" class="result-emoji" aria-hidden="true">💔</div>
+        <div id="resultEyebrow" class="result-eyebrow">班長注意到你了</div>
+        <h2 id="resultTitle" class="result-title">你滑到<br>班長的媽媽了。</h2>
+        <p id="resultSubtitle" class="result-subtitle">班長：你是不是對我媽有什麼想法？</p>
+        <p id="momRoast" class="mom-roast hidden" aria-live="polite"></p>
+        <div id="evidencePanel" class="evidence-panel hidden">
+          <div class="evidence-heading">你剛剛右滑了這張照片…</div>
+          <div class="evidence-photo">
+            <img id="evidenceImage" src="../assets/profiles/mom_01.webp" alt="誤滑的交友照片">
+            <div id="evidenceSpot" class="evidence-spot hidden" aria-hidden="true"></div>
+          </div>
+          <div id="evidenceIdentity" class="evidence-identity"></div>
+          <p id="evidenceReason" class="evidence-reason"></p>
+        </div>
+        <div class="result-stats">
+          <div><small>LIKES</small><strong id="finalScore">0</strong></div>
+          <div><small>TIME SURVIVED</small><strong id="finalTime">0.0s</strong></div>
+          <div><small>HIDDEN MOMS</small><strong id="finalAvoided">0</strong></div>
+        </div>
+        <div id="recordMessage" class="record-message hidden">★ NEW PERSONAL BEST ★</div>
+        <div class="result-actions">
+          <div class="result-action-row">
+            <button id="retryButton" class="primary-button" type="button">再來一局 <span aria-hidden="true">↻</span></button>
+            <button id="homeButton" class="secondary-button home-button" type="button">⌂ 回首頁</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <!-- All photos are bundled in this repository. No Supabase, multiplayer,
+       submissions, leaderboard, community feed, achievement or tracking scripts. -->
+  <script src="../art-data.js?v=0.8.7"></script>
+  <script src="./game.js?v=1"></script>
+</body>
+</html>
