@@ -7,7 +7,7 @@
   <meta name="description" content="國軍交友鑑測：45 秒內別滑到班長的媽媽！">
   <title>別滑到班長的媽媽｜國軍交友鑑測</title>
   <link rel="stylesheet" href="../style.css?v=0.9.0">
-  <link rel="stylesheet" href="./army.css?v=1">
+  <link rel="stylesheet" href="./army.css?v=2">
 </head>
 <body>
   <div class="ambient ambient-a" aria-hidden="true"></div>
@@ -90,17 +90,62 @@
         </div>
         <div id="recordMessage" class="record-message hidden">★ NEW PERSONAL BEST ★</div>
         <div class="result-actions">
-          <div class="result-action-row">
-            <button id="retryButton" class="primary-button" type="button">再來一局 <span aria-hidden="true">↻</span></button>
-            <button id="homeButton" class="secondary-button home-button" type="button">⌂ 回首頁</button>
+          <button id="nextButton" class="primary-button armyNextButton" type="button">下一步 <span aria-hidden="true">➜</span></button>
+        </div>
+      </section>
+      <section id="armyReportScreen" class="screen army-report-screen hidden" aria-label="國軍交友鑑測總結算">
+        <div class="armyReportPanel">
+          <div class="armyReportKicker"><span>國軍交友鑑測報告</span><small>人事考核 · 不予申訴</small></div>
+          <div class="armyReportTitleRow">
+            <div><h2 id="armyReportTitle">鑑測總結算</h2><p id="armyReportSub">待鑑定</p></div>
+            <div id="armyReportStamp" class="armyReportStamp">核定</div>
           </div>
+          <div class="armyReportScore">
+            <div><small>本次鑑測總分</small><div class="armyReportNumber"><strong id="armyReportPoints">0</strong><span>/ 100</span></div></div>
+            <div class="armyReportGrade"><strong id="armyReportGrade">F 級</strong><small id="armyReportBest">歷史最高 0 分</small></div>
+          </div>
+          <div class="armyReportStats">
+            <div><small>正常 LIKE</small><strong id="armyReportLikes">0</strong></div>
+            <div><small>媽媽避開</small><strong id="armyReportAvoided">0</strong></div>
+            <div><small>背景媽媽</small><strong id="armyReportHidden">0</strong></div>
+            <div><small>存活時間</small><strong id="armyReportTime">0 秒</strong></div>
+          </div>
+          <div class="armyReportSectionTitle"><strong>本次獲得的成就</strong><small id="armyReportAchievementCount">0 項</small></div>
+          <div id="armyReportAwards" class="armyAwards" aria-label="本次成就獎章"></div>
+          <button id="armyReportGalleryButton" class="armyGalleryButton" type="button">🏅 查看全部成就圖鑑</button>
+          <div class="armyOfficerMessage"><small>班長講評</small><p id="armyReportComment"></p></div>
+          <button id="armyReportHome" class="armyReportHome" type="button">返回遊戲首頁</button>
         </div>
       </section>
     </main>
   </div>
-  <!-- All photos are bundled in this repository. No Supabase, multiplayer,
-       submissions, leaderboard, community feed, achievement or tracking scripts. -->
+
+  <div id="armyGallery" class="armyModal hidden" role="dialog" aria-modal="true" aria-label="交友鑑測成就圖鑑">
+    <div class="armyModalPanel">
+      <div class="armyModalHead"><h2>🏅 交友鑑測成就圖鑑</h2><button id="armyGalleryClose" type="button" aria-label="關閉成就圖鑑">✕</button></div>
+      <p id="armyGalleryCount" class="armyGalleryCount">已收藏 0 項</p>
+      <div class="armyGalleryFilters" role="group" aria-label="篩選成就">
+        <button id="armyFilterAll" type="button">全部</button>
+        <button id="armyFilterUnlocked" type="button">已解鎖</button>
+        <button id="armyFilterLocked" type="button">未解鎖</button>
+      </div>
+      <div id="armyGalleryItems" class="armyGalleryItems"></div>
+    </div>
+  </div>
+  <div id="armyDetail" class="armyModal hidden" role="dialog" aria-modal="true" aria-label="成就詳細資訊">
+    <div class="armyModalPanel armyDetailPanel">
+      <div class="armyModalHead"><h2>成就資料</h2><button id="armyDetailClose" type="button" aria-label="關閉成就詳細資訊">✕</button></div>
+      <div id="armyDetailIcon" class="armyDetailIcon">🏅</div>
+      <small id="armyDetailRarity" class="armyDetailRarity">普通</small>
+      <h3 id="armyDetailTitle">成就名稱</h3>
+      <p id="armyDetailCondition">解鎖條件</p>
+      <p id="armyDetailState">尚未解鎖</p>
+    </div>
+  </div>
+  <!-- Built-in photos only. No leaderboard, multiplayer, submissions,
+       Supabase, community feeds, analytics or service workers. Achievements are local. -->
   <script src="../art-data.js?v=0.8.7"></script>
-  <script src="./game.js?v=1"></script>
+  <script src="./army-report.js?v=2"></script>
+  <script src="./game.js?v=2"></script>
 </body>
 </html>
