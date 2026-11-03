@@ -59,3 +59,158 @@
  .screen-welcome{justify-content:center}
  .screen-game{padding-top:4px}
 }
+
+/* v2 — strictly one-screen photo verdict; army-style separate field report. */
+#resultScreen{
+ display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;
+ gap:clamp(3px,.65vh,8px);
+ height:100%;min-height:0;max-height:100%;padding:clamp(8px,1.4vh,14px) clamp(12px,2vw,18px) clamp(10px,1.2vh,16px)!important;
+ overflow:hidden!important;overscroll-behavior:none;
+}
+#resultScreen .result-emoji{flex:0 0 auto;font-size:clamp(17px,2.5vh,30px);line-height:1;margin:0}
+#resultScreen .result-eyebrow{flex:0 0 auto;margin:0;font-size:clamp(8px,1.15vh,11px);letter-spacing:1.7px}
+#resultScreen .result-title{font-size:clamp(20px,3.4vh,34px);line-height:1.04;margin:0;flex:0 0 auto}
+#resultScreen .result-subtitle{flex:0 0 auto;font-size:clamp(9px,1.3vh,12px);margin:0;line-height:1.3}
+#resultScreen .mom-roast{flex:0 0 auto;font-size:clamp(10px,1.45vh,13px);line-height:1.32;padding:clamp(5px,1vh,9px) 9px;margin:0 auto;max-width:100%;}
+#resultScreen .evidence-panel{
+ flex:1 1 0;min-height:0;max-height:none;
+ display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+ width:100%;margin:0 auto;
+ overflow:visible!important;
+}
+#resultScreen .evidence-heading{flex:0 0 auto;font-size:10px;margin:0;line-height:1.2}
+#resultScreen .evidence-photo{
+ position:relative;flex:1 1 auto;min-height:0!important;max-height:100%!important;
+ width:min(100%,220px)!important;max-width:220px!important;
+ height:auto!important;aspect-ratio:auto!important;
+ margin:0 auto;
+ border-width:2px;overflow:visible!important;
+}
+#resultScreen .evidence-photo img{
+ display:block;width:100%!important;height:100%!important;
+ max-height:100%;object-fit:contain!important;object-position:center center;
+ border-radius:8px;
+}
+#resultScreen .evidence-identity{flex:0 0 auto;line-height:1.2;margin:0;font-size:clamp(10px,1.35vh,12px)}
+#resultScreen .evidence-reason{
+ flex:0 0 auto;line-height:1.22;font-size:clamp(9px,1.22vh,11px);
+ margin:0;max-width:100%;text-align:center;
+}
+#resultScreen .result-stats{
+ flex:0 0 auto;width:100%;margin:0 auto;
+ padding:clamp(6px,.95vh,10px) 4px;
+}
+#resultScreen .result-stats strong{font-size:clamp(19px,2.6vh,27px);line-height:1.12}
+#resultScreen .result-stats small{font-size:8px}
+#resultScreen .record-message{flex:0 0 auto;font-size:10px;margin:0;line-height:1.1}
+#resultScreen .result-actions{flex:0 0 auto;width:100%;margin:0;padding:0}
+#resultScreen .armyNextButton{width:100%;min-height:clamp(40px,5.1vh,50px);padding:7px 10px;font-size:15px}
+@media(max-height:640px){
+ #resultScreen .result-emoji{display:none}
+ #resultScreen .mom-roast{font-size:10px;padding:4px 6px}
+ #resultScreen .evidence-heading{font-size:9px}
+ #resultScreen .result-stats{padding:4px 2px}
+ #resultScreen .result-title{font-size:clamp(19px,3.6vh,25px)}
+}
+@media(max-height:500px){
+ #resultScreen .result-eyebrow{display:none}
+ #resultScreen .evidence-heading{display:none}
+ #resultScreen .evidence-photo{max-width:130px!important}
+ #resultScreen .mom-roast{max-height:34px;overflow:hidden}
+ #resultScreen .result-subtitle{font-size:9px}
+}
+/* Army report — compact olive paper style (same family as shooting, grenade and blanket). */
+#armyReportScreen{
+ display:flex;flex-direction:column;
+ width:100%;height:100%;min-height:0;max-height:100%;
+ background:linear-gradient(155deg,#143026,#0d2119);
+ overflow:hidden!important;padding:0;
+ color:#f4e7c9;
+}
+#armyReportScreen .armyReportPanel{
+ display:flex;flex-direction:column;gap:clamp(6px,1.0vh,10px);
+ width:100%;height:100%;min-height:0;padding:clamp(12px,2vh,18px);
+ border:1px solid #ceb9885c;border-radius:18px;
+ background:linear-gradient(155deg,#254536,#142e22);
+ overflow:hidden;
+}
+.armyReportKicker{display:flex;justify-content:space-between;gap:9px;align-items:center;font-size:10px;color:#e2c989;font-weight:900;letter-spacing:.5px;flex:0 0 auto}
+.armyReportKicker small{font-size:9px;color:#c7d0bc;letter-spacing:0}
+.armyReportTitleRow{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #ceba895a;padding-bottom:7px;flex:0 0 auto}
+.armyReportTitleRow h2{font-size:clamp(20px,3.7vh,27px);line-height:1.1;margin:0;color:#f8e4b2;font-weight:950}
+.armyReportTitleRow p{font-size:11px;margin:4px 0 0;color:#bfceb9}
+.armyReportStamp{flex:0 0 auto;transform:rotate(-9deg);min-width:68px;padding:9px 6px;border:2px solid #efd284;border-radius:6px;text-align:center;font-size:11px;font-weight:950;color:#f2d48f}
+.armyReportScore{display:flex;justify-content:space-between;align-items:center;gap:10px;flex:0 0 auto;padding:clamp(8px,1.7vh,13px);border:1px solid #c4bb866d;border-radius:13px;background:#1e3c2b}
+.armyReportScore>div:first-child>small{display:block;font-size:11px;color:#bbd0bd}
+.armyReportNumber{display:flex;align-items:baseline;gap:7px}
+.armyReportNumber strong{font-size:clamp(40px,7.2vh,62px);font-weight:1000;line-height:1.1;color:#f9db98}
+.armyReportNumber span{font-size:12px;color:#c4cdbb}
+.armyReportGrade{display:flex;flex-direction:column;gap:6px;align-items:flex-end;text-align:right}
+.armyReportGrade strong{font-size:clamp(20px,3.2vh,26px);color:#efd58f}
+.armyReportGrade small{font-size:10px;color:#c5d3bc}
+.armyReportStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:0 0 auto}
+.armyReportStats>div{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;gap:4px;border:1px solid #a2bb9b55;background:#193428;border-radius:10px;padding:clamp(7px,1.2vh,10px) 3px}
+.armyReportStats small{font-size:9px;color:#bfd0b9;text-align:center}
+.armyReportStats strong{font-size:clamp(15px,2.6vh,21px);color:#fae4b4;white-space:nowrap}
+.armyReportSectionTitle{display:flex;justify-content:space-between;align-items:baseline;gap:9px;flex:0 0 auto;font-size:12px;color:#f3dc9d;border-bottom:1px solid #cab98748;padding:0 0 5px}
+.armyReportSectionTitle small{font-size:10px;color:#b7c9b4;text-align:right}
+.armyAwards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;flex:1 1 0;min-height:76px}
+.armyAwardCard{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;min-width:0;min-height:0;border:1px solid #c6b17b77;background:#254532;border-radius:11px;color:#f3e4bd;padding:7px 3px;text-align:center}
+.armyAwardCard strong{font-size:clamp(9px,1.35vh,12px);line-height:1.2;overflow-wrap:anywhere}
+.armyAwardCard small{font-size:9px;color:#c8d4bd}
+.armyAwardIcon{font-size:clamp(20px,3vh,28px);line-height:1.1}
+.armyNew{position:absolute;right:3px;top:3px;font-size:8px;font-weight:950;background:#f4d995;color:#21392b;border-radius:5px;padding:2px 4px}
+.armyNoAwards{grid-column:1/-1;font-size:12px;padding:9px;background:#193628;color:#c9d9c3;border-radius:10px}
+.armyGalleryButton{flex:0 0 auto;width:100%;min-height:clamp(33px,4.5vh,40px);border:1px solid #dfd09480;border-radius:10px;background:#385742;color:#f8dfaa;font-size:12px;font-weight:900;padding:6px}
+.armyOfficerMessage{flex:0 0 auto;border-left:3px solid #e4c47a;background:#1a3729;padding:8px 10px;min-height:55px;border-radius:0 9px 9px 0}
+.armyOfficerMessage small{font-size:10px;color:#f3d98b;font-weight:950}
+.armyOfficerMessage p{font-size:clamp(10px,1.5vh,12px);line-height:1.45;color:#f1eadd;margin:4px 0 0}
+.armyReportHome{flex:0 0 auto;width:100%;min-height:clamp(38px,5vh,46px);border-radius:11px;border:1px solid #c2ceae75;background:#476751;color:#f5ecd0;font-size:14px;font-weight:900;padding:6px}
+@media(max-height:660px){
+ #armyReportScreen .armyReportPanel{gap:5px;padding:9px}
+ .armyReportKicker{font-size:9px}
+ .armyReportTitleRow{padding-bottom:5px}
+ .armyReportTitleRow h2{font-size:20px}
+ .armyReportScore{padding:5px 10px}
+ .armyReportNumber strong{font-size:36px}
+ .armyReportStats>div{padding:5px 2px}
+ .armyReportStats strong{font-size:15px}
+ .armyReportSectionTitle{padding-bottom:3px}
+ .armyAwards{min-height:66px}
+ .armyAwardIcon{font-size:20px}
+ .armyOfficerMessage{min-height:42px;padding:5px 9px}
+ .armyOfficerMessage p{line-height:1.28}
+}
+@media(max-width:360px){
+ #armyReportScreen .armyReportPanel{padding:9px;gap:5px}
+ .armyReportStats{gap:4px}
+ .armyReportStats small{font-size:8px}
+ .armyReportStats strong{font-size:14px}
+ .armyAwardCard strong{font-size:10px}
+ .armyReportKicker small{font-size:8px}
+}
+/* Achievement gallery: only this optional overlay scrolls. Not the two results. */
+.armyModal.hidden{display:none!important}
+.armyModal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:rgba(7,18,13,.90);backdrop-filter:blur(7px)}
+.armyModalPanel{display:flex;flex-direction:column;gap:10px;width:min(490px,100%);max-height:100%;padding:14px;border-radius:15px;border:1px solid #e1ca916e;background:linear-gradient(145deg,#244535,#132c22);color:#f6e8c7;overflow:hidden}
+.armyModalHead{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.armyModalHead h2{margin:0;font-size:17px;line-height:1.25}
+.armyModalHead button{min-width:34px;min-height:34px;border-radius:50%;border:1px solid #e0c98b77;background:#405d46;color:#f8ead0;font-size:16px}
+.armyGalleryCount{margin:0;font-size:11px;color:#c8d8c4}
+.armyGalleryFilters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.armyGalleryFilters button{border:1px solid #d8ca985b;border-radius:9px;background:#35513d;color:#f5e0b3;padding:8px 4px;font-weight:850;font-size:12px}
+.armyGalleryFilters button.selected{background:#f2d999;color:#283c2a}
+.armyGalleryItems{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;overflow-y:auto;min-height:0;overscroll-behavior:contain;touch-action:pan-y;padding-right:3px}
+.armyGalleryItem{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;border:1px solid #b9ac796b;border-radius:10px;background:#284535;color:#f9e5bb;padding:10px;min-width:0;min-height:130px}
+.armyGalleryItem.locked{background:#1b3329;color:#c3c8b8;opacity:.73}
+.armyGalleryIcon{font-size:24px;line-height:1.2}
+.armyGalleryItem strong{font-size:12px;line-height:1.25}
+.armyGalleryItem small{font-size:10px;color:#e1ce97}
+.armyGalleryItem p{margin:0;font-size:10px;line-height:1.4;color:#cbd7c6}
+.armyDetailPanel{align-items:center;text-align:center;gap:8px;max-width:400px}
+.armyDetailPanel .armyModalHead{align-self:stretch}
+.armyDetailIcon{font-size:43px;display:grid;place-items:center;width:78px;height:78px;border:1px solid #dac68b66;border-radius:18px;background:#3b5742}
+.armyDetailRarity{font-size:12px;color:#ead18e}
+.armyDetailPanel h3{font-size:21px;margin:0}
+.armyDetailPanel p{width:100%;line-height:1.5;text-align:left;font-size:13px;border-radius:9px;background:#183527;margin:0;padding:12px}
+#armyDetailState{color:#f4dca6;font-size:12px}
