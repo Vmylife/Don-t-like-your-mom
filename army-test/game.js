@@ -1,6 +1,6 @@
-/* 別滑到班長的媽媽 — ARMY standalone swipe test v1.
+/* 別滑到班長的媽媽 — ARMY standalone swipe test v2.
    Local single-player only. No Supabase, realtime multiplayer, community
-   content, achievements, analytics, uploads, sharing or service worker. */
+   content, analytics, uploads, sharing or service worker. Achievements stay local. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -28,7 +28,7 @@
   ];
   const ui = {
     welcome:$('welcomeScreen'),game:$('gameScreen'),result:$('resultScreen'),
-    start:$('startButton'),retry:$('retryButton'),home:$('homeButton'),
+    start:$('startButton'),next:$('nextButton'),home:$('armyReportHome'),
     card:$('swipeCard'),cardArea:$('cardArea'),nope:$('nopeButton'),like:$('likeButton'),
     likeStamp:$('likeStamp'),nopeStamp:$('nopeStamp'),
     timer:$('timerValue'),timerFill:$('timerFill'),score:$('scoreValue'),best:$('bestValue'),
@@ -44,11 +44,14 @@
 
   function showScreen(name){
     for(const key of ['welcome','game','result'])ui[key].classList.toggle('hidden',key!==name);
+    $('armyReportScreen')?.classList.toggle('hidden',name!=='report');
   }
   function getBest(){try{return Math.max(0,Number(localStorage.getItem('army_no_sergeant_mom_best_v1'))||0)}catch{return 0}}
   function saveBest(x){try{localStorage.setItem('army_no_sergeant_mom_best_v1',String(x))}catch{}}
   let best=getBest();
   let score=0,avoided=0,hiddenAvoided=0,combo=0,shown=0;
+  let skipped=0,maxCombo=0,momStreak=0,maxMomStreak=0,earlyLikes=0,choices=0;
+  let buttonUses=0,dragUses=0,keyboardUses=0;
   let running=false,ended=false,locked=false,cardReady=false,momPending=false;
   let startAt=0,endAt=0,frame=0,pending=0,drag=null;
   let current=null,currentEntry=null,upcoming=[],preparedLevel=-1,deck=null;
@@ -203,7 +206,9 @@
     }
     starting=true;ui.start.disabled=true;ui.loadingStatus.textContent='正在準備照片…';
     clearTimers();running=false;ended=false;locked=false;momPending=false;
-    score=0;avoided=0;hiddenAvoided=0;combo=0;shown=0;preparedLevel=-1;upcoming=[];
+    score=0;avoided=0;hiddenAvoided=0;combo=0;shown=0;skipped=0;maxCombo=0;
+    momStreak=0;maxMomStreak=0;earlyLikes=0;choices=0;buttonUses=0;dragUses=0;keyboardUses=0;
+    preparedLevel=-1;upcoming=[];
     ++renderToken;++previewToken;
     deck=makeDeck();
     fillDeck();
@@ -230,12 +235,17 @@
     if(remain<=0){if(!momPending)finish(false);return}
     frame=requestAnimationFrame(tick);
   }
-  function swipe(choice){
+  function swipe(choice,source='button'){
     if(!running||locked||ended||!cardReady)return;
+    choices++;
+    if(source==='button')buttonUses++;
+    else if(source==='drag')dragUses++;
+    else if(source==='keyboard')keyboardUses++;
     if(performance.now()>=endAt){finish(false);return}
     locked=true;
     const person=current,like=choice==='like';
     if(like&&person.isMom){
+      momStreak=0;combo=0;
       momPending=true;
       ui.card.classList.add('animating');
       ui.card.style.transform='translate3d(120%,-6px,0) rotate(21deg)';
@@ -243,9 +253,14 @@
       pending=setTimeout(()=>{pending=0;finish(true,person)},240);
       return;
     }
-    if(like&&!person.isMom){score++;combo++}
-    else if(!like&&person.isMom){avoided++;combo++;if(person.trapType==='background')hiddenAvoided++}
-    else combo=0;
+    if(like&&!person.isMom){
+      score++;combo++;momStreak=0;
+      if(performance.now()-startAt<=5000)earlyLikes++;
+    }else if(!like&&person.isMom){
+      avoided++;combo++;momStreak++;maxMomStreak=Math.max(maxMomStreak,momStreak);
+      if(person.trapType==='background')hiddenAvoided++;
+    }else{skipped++;combo=0;momStreak=0}
+    maxCombo=Math.max(maxCombo,combo);
     const direction=like?1:-1;
     ui.card.classList.remove('dragging');ui.card.classList.add('animating');
     ui.card.style.transform='translate3d('+(direction*135)+'%,-10px,0) rotate('+(direction*23)+'deg)';
@@ -285,6 +300,11 @@
     const survived=!likedMom;
     const isBest=survived&&score>best;
     if(isBest){best=score;saveBest(best)}
+    try{window.armySwipeReport?.finalize?.({
+      likedMom,culpritKind:culprit?.trapType||null,likes:score,avoided,hiddenAvoided,
+      skipped,maxCombo,maxMomStreak,earlyLikes,choices,elapsed,
+      buttonUses,dragUses,keyboardUses
+    })}catch(err){console.error('[國軍交友鑑測] 成就結算失敗',err)}
     ui.resultEmoji.textContent=likedMom?'💔':'🏆';
     ui.resultEyebrow.textContent=likedMom?'班長注意到你了':'鑑測結束';
     ui.resultTitle.innerHTML=likedMom?'你滑到<br>班長的媽媽了。':'45 秒過關！<br>沒滑到班長的媽媽。';
@@ -311,7 +331,7 @@
       };
       ui.evidenceImage.src=culprit.image;
       ui.evidenceImage.alt=culprit.name+' — 誤滑的交友照片';
-      ui.evidenceReason.textContent='↳ '+culprit.reason.replaceAll('媽媽','班長的媽媽');
+      ui.evidenceReason.textContent='↳ '+culprit.reason.replaceAll('班長的媽媽','媽媽').replaceAll('媽媽','班長的媽媽');
       ui.evidenceIdentity.replaceChildren(document.createTextNode(culprit.name+'，'+culprit.age+' 歲'));
       if(ui.evidenceImage.complete&&ui.evidenceImage.naturalWidth)ui.evidenceImage.onload();
     }else{
@@ -327,10 +347,17 @@
   }
 
   ui.start.addEventListener('click',startRound);
-  ui.retry.addEventListener('click',startRound);
+  ui.next.addEventListener('click',()=>{
+    if(!ended)return;
+    const report=window.armySwipeReport;
+    if(!report?.present?.()){
+      // Defensive fallback: only used if report script failed to load.
+      goHome();
+    }
+  });
   ui.home.addEventListener('click',goHome);
-  ui.like.addEventListener('click',()=>swipe('like'));
-  ui.nope.addEventListener('click',()=>swipe('nope'));
+  ui.like.addEventListener('click',()=>swipe('like','button'));
+  ui.nope.addEventListener('click',()=>swipe('nope','button'));
   ui.card.addEventListener('pointerdown',e=>{
     if(!running||locked||!cardReady||drag)return;
     e.preventDefault();drag={id:e.pointerId,x:e.clientX,y:e.clientY};
@@ -347,13 +374,13 @@
   ui.card.addEventListener('pointerup',e=>{
     if(!drag||drag.id!==e.pointerId)return;
     const dx=e.clientX-drag.x;drag=null;
-    if(dx>65)swipe('like');else if(dx< -65)swipe('nope');else resetCardTransform();
+    if(dx>65)swipe('like','drag');else if(dx< -65)swipe('nope','drag');else resetCardTransform();
   });
   ui.card.addEventListener('pointercancel',resetCardTransform);
   document.addEventListener('keydown',e=>{
     if(!running||e.repeat)return;
-    if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){e.preventDefault();swipe('nope')}
-    if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){e.preventDefault();swipe('like')}
+    if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){e.preventDefault();swipe('nope','keyboard')}
+    if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){e.preventDefault();swipe('like','keyboard')}
   });
   document.addEventListener('gesturestart',e=>{if(e.cancelable)e.preventDefault()},{passive:false});
   window.addEventListener('resize',()=>requestAnimationFrame(repositionEvidenceMarker));
@@ -364,5 +391,5 @@
   if(!ART||!ART.normal?.length||!ART.direct?.length||!ART.background?.length){
     ui.start.disabled=true;ui.loadingStatus.textContent='照片資料未載入，請重新整理。';
   }
-  window.armySwipeTest={status:()=>({running,ended,score,shown,avoided,hiddenAvoided,online:false,achievements:false}),start:startRound,swipe,home:goHome};
+  window.armySwipeTest={status:()=>({running,ended,score,shown,avoided,hiddenAvoided,online:false,achievements:true,choices,maxCombo,skipped}),start:startRound,swipe,home:goHome};
 })();
