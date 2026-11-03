@@ -26,7 +26,7 @@ const A=[
  ['failLate','🥲','差一步就放假','撐過 35 秒後才滑到媽媽','史詩',s=>s.likedMom&&s.elapsed>=35],
  ['fail10likes','📋','十個愛心換一張檢討','LIKE 至少 10 人才滑到媽媽','稀有',s=>s.likedMom&&s.likes>=10],
  ['failZero','🫠','一個對象都沒找到','0 LIKE 就滑到媽媽','普通',s=>s.likedMom&&s.likes===0],
- ['firstMom','🪦','第一張就當女婿','第一次滑動就右滑媽媽','傳說',s=>s.likedMom&&s.choices===1,true],
+ ['firstMom','🪦','第一位媽媽就認親','遇到的第一位媽媽就右滑失敗','傳說',s=>s.likedMom&&s.avoided===0,true],
  ['avoid1','🙅','有眼睛的士兵','成功避開至少 1 張媽媽照片','普通',s=>s.avoided>=1],
  ['avoid3','👓','眼鏡有擦乾淨','一局避開至少 3 張媽媽照片','稀有',s=>s.avoided>=3],
  ['avoid5','🕵️','反媽媽雷達','一局避開至少 5 張媽媽照片','史詩',s=>s.avoided>=5],
