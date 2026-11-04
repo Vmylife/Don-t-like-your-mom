@@ -167,6 +167,8 @@ function present(){
  paintMedals();
  $('resultScreen').classList.add('hidden');
  $('armyReportScreen').classList.remove('hidden');
+ // ARMY3 training receipt: display only, does not change the minigame.
+ window.armyProgression?.rewardPanel('swipe',s.points,$('armyReportPoints').closest('.armyReportScore')||$('armyReportPoints'));
  return true;
 }
 function renderGallery(){
